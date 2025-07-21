@@ -1,0 +1,24 @@
+# PowerShell specific
+*.psd1.bak
+*.psm1.bak
+
+# General
+.vscode/
+.history/
+*.user
+*.suo
+*.sln.docstates
+*.cache
+*~
+*.bak
+*.tmp
+*.orig
+
+# Logs
+*.log
+
+# IDE specific
+Gemini.md
+
+# Exclude complete assets folder
+assets/
