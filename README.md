@@ -8,6 +8,7 @@ SecurityInfo is a PowerShell module that provides functions to query and analyze
 
 - Query CVEs from CVE.org API
 - Query CVEs from the National Vulnerability Database (NVD)
+- Query vulnerabilities from the ENISA EU Vulnerability Database (EUVD)
 - Retrieve known exploited vulnerabilities from CISA KEV
 - Search for exploits in Exploit-DB by CVE
 - Get EPSS scores for vulnerabilities from FIRST EPSS
@@ -57,6 +58,18 @@ Get-EpssScore -Days 7
 Get-EpssScore -EpssGreaterThan 0.5 -PercentileLessThan 0.9
 ```
 
+### Query ENISA EU Vulnerability Database (EUVD)
+
+```powershell
+# By ENISA ID
+Get-Euvd -CveId "2023-12345"
+
+# By keyword
+Get-Euvd -Keyword "openssl"
+```
+
+Retrieves vulnerability information from the ENISA EUVD by ENISA ID or keyword.
+
 ### Aggregate Security Information from All Sources
 
 ```powershell
@@ -71,7 +84,9 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 
 ## Links
 
+- [CVE.org API](https://www.cve.org/ResourcesSupport/Resources#CVEListDataFeeds)
 - [NVD JSON Feeds](https://nvd.nist.gov/vuln/data-feeds#JSON_FEED)
 - [CISA KEV Catalog](https://www.cisa.gov/known-exploited-vulnerabilities-catalog)
 - [Exploit-DB](https://www.exploit-db.com/)
 - [FIRST EPSS](https://www.first.org/epss/)
+- [ENISA EUVD](https://euvd.enisa.europa.eu/apidoc)

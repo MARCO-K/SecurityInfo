@@ -58,8 +58,9 @@ function Get-SecurityInfo {
             $cisaData = Get-CisaKev -CveId $cve -ErrorAction SilentlyContinue
             $epssData = Get-EpssScore -CveId $cve -ErrorAction SilentlyContinue
             $exploitDbData = Get-ExploitDb -CveId $cve -ErrorAction SilentlyContinue
+            $euvdData = Get-Euvd -CveId $cve -ErrorAction SilentlyContinue
 
-            if ($null -eq $nvdData -and $null -eq $cveOrgData -and $null -eq $cisaData -and $null -eq $epssData -and $null -eq $exploitDbData) {
+            if ($null -eq $nvdData -and $null -eq $cveOrgData -and $null -eq $cisaData -and $null -eq $epssData -and $null -eq $exploitDbData -and $null -eq $euvdData) {
                 Write-Warning "No information found for '$cve' in any of the available sources."
             }
             else {
@@ -78,6 +79,7 @@ function Get-SecurityInfo {
                     CISA_KEV_Details  = if ($null -ne $cisaData) { $cisaData } else { $false }
                     NVD_Details       = if ($null -ne $nvdData) { $nvdData } else { $false }
                     CveOrg_Details    = if ($null -ne $cveOrgData) { $cveOrgData } else { $false }
+                    EUVD_Details      = if ($null -ne $euvdData) { $euvdData } else { $false }
                 }
             }
         }
