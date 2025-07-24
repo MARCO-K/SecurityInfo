@@ -80,6 +80,13 @@ function Get-EpssScore
         {
             'ByCveId'
             {
+                $CveId = $CveId | ForEach-Object {
+                    if (-not $_.StartsWith('CVE-', [System.StringComparison]::OrdinalIgnoreCase)) {
+                        "CVE-$_"
+                    } else {
+                        $_
+                    }
+                }
                 $params.cve = $CveId -join ','
                 break
             }

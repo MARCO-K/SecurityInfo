@@ -108,9 +108,10 @@ function Get-NvdCve
             }
             'ByCveId'
             {
-                #$requestUrl = "$baseApiUrl`?cveId=CVE-$CveId"
-                $params.cveId = "CVE-$CveId"
-
+                if (-not $CveId.StartsWith('CVE-', [System.StringComparison]::OrdinalIgnoreCase)) {
+                    $CveId = "CVE-$CveId"
+                }
+                $params.cveId = $CveId
             }
         }
 
@@ -201,97 +202,10 @@ function Get-NvdCve
                         $cvssVersion = "3.1"
                     }
 
-                    $originalCveId = $cve.id
-
-                    # If you need to remove "CVE-" for some other purpose
-                    $processedCveId = if ($originalCveId.StartsWith("CVE-"))
-                    {
-                        $originalCveId.Replace("CVE-", "")
-                    }
-                    else
-                    {
-                        $originalCveId
-                    }
-
-                    # --- Conditionally initialize for Affected Software/Vendors ---
-                    $affectedVendors = $null # Initialize as $null or empty string if not included
-                    $affectedProducts = $null # Initialize as $null or empty string if not included
-
-                    if ($IncludeAffectedSoftware)
-                    {
-                        # Only run this block if -IncludeAffectedSoftware is used
-                        # Use generic lists for better performance and predictable behavior when adding items in a loop
-                        $tempVendors = [System.Collections.Generic.List[string]]::new()
-                        $tempProducts = [System.Collections.Generic.List[string]]::new()
-                        $cpeUris = [System.Collections.Generic.List[string]]::new()
-
-                        if ($cve.configurations -and $cve.configurations.nodes -and $cve.configurations.nodes.Count -gt 0)
-                        {
-                            Write-Verbose "Found $($cve.configurations.nodes.Count) configuration nodes."
-                            foreach ($node in $cve.configurations.nodes)
-                            {
-                                if ($node.cpeMatch -and $node.cpeMatch.Count -gt 0)
-                                {
-                                    foreach ($cpeMatch in $node.cpeMatch)
-                                    {
-                                        if ($cpeMatch.vulnerable -eq $true -and $cpeMatch.criteria)
-                                        {
-                                            Write-Verbose "    Processing CPE Match: vulnerable=$($cpeMatch.vulnerable), criteria='$($cpeMatch.criteria)'"
-                                            $cpeUri = $cpeMatch.criteria
-                                            $cpeUris += $cpeUri
-
-                                            $cpeParts = $cpeUri.Split(':')
-                                            $vendor = "Unknown"
-                                            $product = "Unknown"
-
-                                            if ($cpeParts.Length -ge 5 -and $cpeParts[1] -eq "2.3")
-                                            {
-                                                $vendor = $cpeParts[3]
-                                                $product = $cpeParts[4]
-                                            }
-                                            elseif ($cpeParts.Length -ge 4 -and $cpeParts[1].StartsWith("/"))
-                                            {
-                                                $vendor = $cpeParts[2]
-                                                $product = $cpeParts[3]
-                                            }
-                                            else
-                                            {
-                                                Write-Verbose "Could not parse standard CPE URI format for: '$cpeUri'"
-                                            }
-
-                                            # Check if vendor is valid and not already in the list
-                                            if (-not [string]::IsNullOrWhiteSpace($vendor) -and $vendor -ne '-' -and $vendor -ne 'Unknown')
-                                            {
-                                                if (-not $tempVendors.Contains($vendor))
-                                                {
-                                                    # Use .Contains() for List[string]
-                                                    $tempVendors.Add($vendor)
-                                                }
-                                            }
-                                            # Check if product is valid and not already in the list
-                                            if (-not [string]::IsNullOrWhiteSpace($product) -and $product -ne '-' -and $product -ne 'Unknown')
-                                            {
-                                                if (-not $tempProducts.Contains($product))
-                                                {
-                                                    # Use .Contains() for List[string]
-                                                    $tempProducts.Add($product)
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        # Assign the collected unique lists to the output variables
-                        $affectedVendors = $tempVendors
-                        $affectedProducts = $tempProducts
-                    }
-                    # --- End Conditional Section --
-
                     # --- Output Section ---
                     $cveOutput =
                     [pscustomobject]@{
-                        CVEID         = $processedCveId
+                        CVEID         = $cve.id
                         CVSSVersion   = $cvssVersion
                         CVSSSeverity  = $CVSSSeverity
                         CVSSBaseScore = $baseScore

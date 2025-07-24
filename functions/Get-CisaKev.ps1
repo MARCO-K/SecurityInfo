@@ -46,8 +46,7 @@
     Date: July 2025
     The function uses the public KEVin API and may be subject to availability or rate limits.
 #>
-function Get-CisaKev
-{
+function Get-CisaKev {
     [CmdletBinding(DefaultParameterSetName = 'ByCveId')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'ByCveId')]
@@ -64,35 +63,31 @@ function Get-CisaKev
         [string]$Severity
     )
 
-    begin
-    {
+    begin {
         $baseApiUrl = "https://kevin.gtfkd.com/api/v1"
         $apiUrl = ""
 
-        switch ($PSCmdlet.ParameterSetName)
-        {
-            'ByCveId'
-            {
+        switch ($PSCmdlet.ParameterSetName) {
+            'ByCveId' {
+                if (-not $CveId.StartsWith('CVE-', [System.StringComparison]::OrdinalIgnoreCase)) {
+                    $CveId = "CVE-$CveId"
+                }
                 $apiUrl = "$baseApiUrl/vulnerabilities/id/$CveId"
                 break
             }
-            'ByKeyword'
-            {
+            'ByKeyword' {
                 $apiUrl = "$baseApiUrl/vulnerabilities/search?q=$Keyword"
                 break
             }
-            'ByDays'
-            {
+            'ByDays' {
                 $apiUrl = "$baseApiUrl/kev/recent?days=$Days"
                 break
             }
         }
     }
 
-    process
-    {
-        try
-        {
+    process {
+        try {
             $response = Invoke-RestMethod -Method Get -Uri $apiUrl
             $results = $response | ForEach-Object {
                 [pscustomobject]@{
@@ -110,34 +105,37 @@ function Get-CisaKev
                 }
             }
 
-            if ($PSBoundParameters.ContainsKey('Severity'))
-            {
+            if ($PSBoundParameters.ContainsKey('Severity')) {
                 $filteredResults = @()
-                foreach ($result in $results)
-                {
-                    try
-                    {
+                foreach ($result in $results) {
+                    try {
                         $vulnDetails = Invoke-RestMethod -Method Get -Uri "$baseApiUrl/vuln/$($result.cveID)"
-                        if ($vulnDetails.cvssV3_severity -eq $Severity)
-                        {
+                        if ($vulnDetails.cvssV3_severity -eq $Severity) {
                             $filteredResults += $result
                         }
                     }
-                    catch
-                    {
+                    catch {
                         Write-Warning "Could not retrieve vulnerability details for $($result.cveID) to filter by severity."
                     }
                 }
                 $filteredResults
             }
-            else
-            {
+            else {
                 $results
             }
         }
-        catch
-        {
-            Write-Error "Error fetching data from KEVin API: $_"
+        catch {
+            # Check if the error is the specific "not found" message from the API
+            $errorMessage = $_.ErrorDetails.Message | ConvertFrom-Json -ErrorAction SilentlyContinue
+            if ($errorMessage -and $errorMessage.error -eq "You found nothing! Congratulations!") {
+                # This is a valid "not found" response. Inform the user if they are running in verbose mode.
+                Write-Verbose "CVE '$CveId' was not found in the CISA KEV catalog."
+                return
+            }
+            else {
+                # It's a different, unexpected error, so we report it.
+                Write-Error "Error fetching data from KEVin API: $_"
+            }
         }
     }
 }
