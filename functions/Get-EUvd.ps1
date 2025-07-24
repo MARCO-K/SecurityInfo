@@ -1,5 +1,37 @@
+<#
+.SYNOPSIS
+    Retrieves vulnerability information from the ENISA EU Vulnerability Database (EUVD) by ENISA ID or keyword.
 
+.DESCRIPTION
+    This function queries the ENISA EUVD API for vulnerability details using either an ENISA ID or a keyword. It returns information such as CVE ID, description, publication date, last modified date, severity, CVSS score, vector, and vendor.
+
+.PARAMETER CveId
+    The ENISA ID (e.g., "2023-12345") to retrieve vulnerability details for. The function will prepend 'EUVD-' if not present.
+
+.PARAMETER Keyword
+    A keyword to search for vulnerabilities in the ENISA EUVD database.
+
+.EXAMPLE
+    Get-Euvd -CveId "2023-12345"
+    # Retrieves vulnerability details for ENISA ID 2023-12345.
+
+.EXAMPLE
+    Get-Euvd -Keyword "openssl"
+    # Searches for vulnerabilities related to 'openssl' in the ENISA EUVD database.
+
+.OUTPUTS
+    [pscustomobject] containing vulnerability details for each matching entry.
+
+.LINK
+    https://euvd.enisa.europa.eu/
+
+.NOTES
+    Author: Marco Kleinert
+    Date: July 2025
+    The function uses the public ENISA EUVD API and may be subject to availability or rate limits.
+#>
 function Get-Euvd {
+
     [CmdletBinding(DefaultParameterSetName = 'ByCveId')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'ByCveId')]
@@ -40,17 +72,15 @@ function Get-Euvd {
             $results =
             foreach ($item in $response) {
 
-
                 [pscustomobject]@{
                     CveId        = $item.ID
-                    Title        = $item.title
                     Description  = $item.description
                     Published    = $item.datePublished
                     LastModified = $item.dateUpdated
                     Severity     = $item.severity
                     CVSSScore    = $item.baseScore
                     Vector       = $item.baseScoreVector
-                    Status       = $item.status
+                    Vendor       = $response.enisaIdVendor.vendor.Name
                 }
             }
             $results
