@@ -49,6 +49,10 @@ function Get-Euvd {
         switch ($PSCmdlet.ParameterSetName) {
             'ByCveId' {
                 if (-not $CveId.StartsWith('EUVD-', [System.StringComparison]::OrdinalIgnoreCase)) {
+                    # Remove CVE- prefix if present, then prepend EUVD-
+                    if ($CveId.StartsWith('CVE-', [System.StringComparison]::OrdinalIgnoreCase)) {
+                        $CveId = $CveId.Substring(4)
+                    }
                     $CveId = "EUVD-$CveId"
                 }
                 $apiUrl = "$($baseApiUrl)enisaid?id=$CveId"
