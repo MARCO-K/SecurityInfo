@@ -71,6 +71,7 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 
 ## Links
 
+- [CVE.org API](https://www.cve.org/ResourcesSupport/Resources#CVEListDataFeeds)
 - [NVD JSON Feeds](https://nvd.nist.gov/vuln/data-feeds#JSON_FEED)
 - [CISA KEV Catalog](https://www.cisa.gov/known-exploited-vulnerabilities-catalog)
 - [Exploit-DB](https://www.exploit-db.com/)
