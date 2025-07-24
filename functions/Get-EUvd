@@ -1,0 +1,62 @@
+
+function Get-Euvd {
+    [CmdletBinding(DefaultParameterSetName = 'ByCveId')]
+    param (
+        [Parameter(Mandatory = $true, ParameterSetName = 'ByCveId')]
+        [string]$CveId,
+
+        [Parameter(Mandatory = $true, ParameterSetName = 'ByKeyword')]
+        [string]$Keyword
+
+    )
+
+    begin {
+        $baseApiUrl = "https://euvdservices.enisa.europa.eu/api/"
+
+
+        switch ($PSCmdlet.ParameterSetName) {
+            'ByCveId' {
+                if (-not $CveId.StartsWith('EUVD-', [System.StringComparison]::OrdinalIgnoreCase)) {
+                    $CveId = "EUVD-$CveId"
+                }
+                $apiUrl = "$($baseApiUrl)enisaid?id=$CveId"
+            }
+            'ByKeyword' {
+                $apiUrl = "$($baseApiUrl)search?text=$Keyword"
+            }
+        }
+    }
+    process {
+        try {
+            $response = Invoke-RestMethod -Method Get -Uri $apiUrl
+            Write-Verbose "Response from EUVD API: $apiUrl"
+            if ($null -eq $response) {
+                Write-Warning "No data found for '$CveId' or keyword '$Keyword'."
+                return
+            }
+            if ($response.items.Count -ne 0) {
+                $response = $response.items
+            }
+            $results =
+            foreach ($item in $response) {
+
+
+                [pscustomobject]@{
+                    CveId        = $item.ID
+                    Title        = $item.title
+                    Description  = $item.description
+                    Published    = $item.datePublished
+                    LastModified = $item.dateUpdated
+                    Severity     = $item.severity
+                    CVSSScore    = $item.baseScore
+                    Vector       = $item.baseScoreVector
+                    Status       = $item.status
+                }
+            }
+            $results
+        }
+        catch {
+            Write-Error "Failed to retrieve data from EUVD: $_"
+        }
+    }
+}
