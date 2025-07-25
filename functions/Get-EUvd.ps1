@@ -64,33 +64,44 @@ function Get-Euvd {
     }
     process {
         try {
-            $response = Invoke-RestMethod -Method Get -Uri $apiUrl
-            Write-Verbose "Response from EUVD API: $apiUrl"
-            if ($null -eq $response) {
-                Write-Warning "No data found for '$CveId' or keyword '$Keyword'."
-                return
-            }
-            if ($response.items.Count -ne 0) {
-                $response = $response.items
-            }
-            $results =
-            foreach ($item in $response) {
+            $response = Invoke-RestMethod -Method Get -Uri $apiUrl -ErrorAction Stop
+            Write-Verbose "Querying EUVD API: $apiUrl"
 
+            if ($PSCmdlet.ParameterSetName -eq 'ByCveId' -and -not $response.PSObject.Properties['ID']) {
+                Write-Verbose "API returned an empty object for ID '$CveId'. No match found."
+                return # Return nothing
+            }
+
+            # Determine if the response is a search result (with an .items property) or a direct lookup
+            $itemsToProcess = if ($response.PSObject.Properties.Name -contains 'items') {
+                $response.items
+            }
+            else {
+                $response
+            }
+
+            # If there are no items to process after normalization, return nothing
+            if ($null -eq $itemsToProcess) { return }
+
+            $results = foreach ($item in $itemsToProcess) {
                 [pscustomobject]@{
-                    CveId        = $item.ID
+                    EuvdId       = $item.ID
                     Description  = $item.description
-                    Published    = $item.datePublished
-                    LastModified = $item.dateUpdated
+                    # Convert dates to [datetime] objects for better usability (sorting, filtering)
+                    Published    = if ($item.datePublished) { [datetime]$item.datePublished } else { $null }
+                    LastModified = if ($item.dateUpdated) { [datetime]$item.dateUpdated } else { $null }
                     Severity     = $item.severity
                     CVSSScore    = $item.baseScore
                     Vector       = $item.baseScoreVector
-                    Vendor       = $response.enisaIdVendor.vendor.Name
+                    Vendor       = $item.enisaIdVendor.vendor.Name
                 }
             }
+
+            # Return the populated array of results
             $results
         }
         catch {
-            Write-Error "Failed to retrieve data from EUVD: $_"
+            Write-Error "Failed to retrieve data from EUVD for URI '$apiUrl'. Error: $($_.Exception.Message)"
         }
     }
 }

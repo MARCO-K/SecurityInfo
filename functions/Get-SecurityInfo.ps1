@@ -10,8 +10,12 @@
     but falling back to the official cve.org record for newer or reserved CVEs. This ensures the most
     complete and timely information is always returned.
 
+
 .PARAMETER CveId
     One or more CVE IDs to query. These can be provided with or without the "CVE-" prefix.
+
+.PARAMETER vulnDetails
+    If specified, includes detailed nested objects from each available data source in the output (NVD_Data, CveOrg_Data, CisaKev_Data, Epss_Data, ExploitDb_Data, Euvd_Data, GitHub_Data).
 
 .EXAMPLE
     PS C:\> Get-SecurityInfo -CveId "CVE-2024-21413"
@@ -42,7 +46,9 @@ function Get-SecurityInfo {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, Position = 0)]
-        [string[]]$CveId
+        [string[]]$CveId,
+        [Parameter(Mandatory = $false)]
+        [switch]$vulnDetails
     )
 
     process {
@@ -53,6 +59,7 @@ function Get-SecurityInfo {
                 $cve = "CVE-$cve"
             }
 
+            # --- Gather all data up front ---
             $nvdData = Get-NvdCve -CveId $cve -ErrorAction SilentlyContinue
             $cveOrgData = Get-CveOrg -CveId $cve -ErrorAction SilentlyContinue
             $cisaData = Get-CisaKev -CveId $cve -ErrorAction SilentlyContinue
@@ -61,28 +68,45 @@ function Get-SecurityInfo {
             $euvdData = Get-Euvd -CveId $cve -ErrorAction SilentlyContinue
             $githubAdvisoryData = Get-GitHubSecurityAdvisory -CveId $cve -ErrorAction SilentlyContinue
 
-            if ($null -eq $nvdData -and $null -eq $cveOrgData -and $null -eq $cisaData -and $null -eq $epssData -and $null -eq $exploitDbData -and $null -eq $euvdData -and $null -eq $githubAdvisoryData) {
+            if (-not ($nvdData, $cveOrgData, $cisaData, $epssData, $exploitDbData, $euvdData, $githubAdvisoryData).Where({ $null -ne $_ }, 'First')) {
                 Write-Warning "No information found for '$cve' in any of the available sources."
+                continue # Skip to the next CVE ID
             }
             else {
-                # Build the output object, prioritizing NVD, but falling back to CveOrg
-                [pscustomobject][ordered]@{
-                    CveId                  = $cve
-                    Title                  = if ($cveOrgData) { $cveOrgData.Title } elseif ($nvdData) { $nvdData.Description } else { 'N/A' }
-                    Published              = if ($nvdData) { $nvdData.Published } elseif ($cveOrgData) { $cveOrgData.DatePublished } else { 'N/A' }
-                    LastModified           = if ($nvdData) { $nvdData.LastModified } elseif ($cveOrgData) { $cveOrgData.DateUpdated } else { 'N/A' }
-                    Status                 = if ($nvdData) { $nvdData.Status } elseif ($cveOrgData) { $cveOrgData.State } else { 'N/A' }
-                    Severity               = if ($nvdData) { $nvdData.CVSSSeverity } elseif ($cveOrgData) { $cveOrgData.Severity } else { 'N/A' }
-                    CVSSScore              = if ($nvdData) { $nvdData.CVSSBaseScore } elseif ($cveOrgData) { $cveOrgData.BaseScore } else { 'N/A' }
-                    Description            = if ($nvdData) { $nvdData.Description } elseif ($cveOrgData) { $cveOrgData.Description } else { 'N/A' }
-                    EPSS_Details           = if ($null -ne $epssData) { $epssData } else { $null }
-                    ExploitDB_Details      = if ($null -ne $exploitDbData) { $exploitDbData } else { $false }
-                    CISA_KEV_Details       = if ($null -ne $cisaData) { $cisaData } else { $false }
-                    NVD_Details            = if ($null -ne $nvdData) { $nvdData } else { $false }
-                    CveOrg_Details         = if ($null -ne $cveOrgData) { $cveOrgData } else { $false }
-                    EUVD_Details           = if ($null -ne $euvdData) { $euvdData } else { $false }
-                    GitHubAdvisory_Details = if ($null -ne $githubAdvisoryData) { $githubAdvisoryData } else { $false }
+                # --- Build the output object using a single ordered hashtable for clarity and efficiency ---
+                $props = [ordered]@{
+                    CveId                = $cve
+                    Title                = if ($cveOrgData) { $cveOrgData.Title } elseif ($nvdData) { $nvdData.Description } else { 'N/A' }
+                    Published            = if ($nvdData) { $nvdData.Published } elseif ($cveOrgData) { $cveOrgData.DatePublished } else { 'N/A' }
+                    LastModified         = if ($nvdData) { $nvdData.LastModified } elseif ($cveOrgData) { $cveOrgData.DateUpdated } else { 'N/A' }
+                    Status               = if ($nvdData) { $nvdData.Status } elseif ($cveOrgData) { $cveOrgData.State } else { 'N/A' }
+                    Severity             = if ($nvdData) { $nvdData.CVSSSeverity } elseif ($cveOrgData) { $cveOrgData.Severity } else { 'N/A' }
+                    CVSSScore            = if ($nvdData) { $nvdData.CVSSBaseScore } elseif ($cveOrgData) { $cveOrgData.BaseScore } else { 'N/A' }
+                    Description          = if ($nvdData) { $nvdData.Description } elseif ($cveOrgData) { $cveOrgData.Description } else { 'N/A' }
+
+                    # --- Boolean flags for a quick summary view ---
+                    IsNvdAvailable       = [bool]$nvdData
+                    IsCveOrgAvailable    = [bool]$cveOrgData
+                    IsCisaKevAvailable   = [bool]$cisaData
+                    IsEpssAvailable      = [bool]$epssData
+                    IsExploitDbAvailable = [bool]$exploitDbData
+                    IsEuvdAvailable      = [bool]$euvdData
+                    IsGitHubAvailable    = [bool]$githubAdvisoryData
                 }
+
+                # This block adds nested objects for each data source if -vulnDetails is used.
+                if ($vulnDetails) {
+                    # These are now independent 'if' statements, not an 'elseif' chain.
+                    if ($nvdData) { $props['NVD_Data'] = $nvdData }
+                    if ($cveOrgData) { $props['CveOrg_Data'] = $cveOrgData }
+                    if ($cisaData) { $props['CisaKev_Data'] = $cisaData }
+                    if ($epssData) { $props['Epss_Data'] = $epssData }
+                    if ($exploitDbData) { $props['ExploitDb_Data'] = $exploitDbData }
+                    if ($euvdData) { $props['Euvd_Data'] = $euvdData }
+                    if ($githubAdvisoryData) { $props['GitHub_Data'] = $githubAdvisoryData }
+                }
+                # output the result object
+                [pscustomobject]$props
             }
         }
         $output

@@ -73,10 +73,17 @@ Retrieves vulnerability information from the ENISA EUVD by ENISA ID or keyword.
 ### Aggregate Security Information from All Sources
 
 ```powershell
-Get-SecurityInfo -CveId "2023-12345", "2023-12345", "2022-5678"
+# Summary view (with boolean flags for each source)
+Get-SecurityInfo -CveId "2023-12345"
+
+# Pipeline input
+"2023-12345","2022-5678" | Get-SecurityInfo
+
+# Include all available details from each source
+Get-SecurityInfo -CveId "2023-12345" -vulnDetails
 ```
 
-Retrieves and summarizes vulnerability information for one or more CVEs from NVD, CISA KEV, Exploit-DB, FIRST EPSS, and CveOrg.
+The summary view includes fields like Title, Status, Severity, and boolean flags (e.g., IsNvdAvailable, IsCisaKevAvailable, IsGitHubAvailable) to quickly see which sources have data. Use `-vulnDetails` to include full nested objects from each source (NVD_Data, CveOrg_Data, CisaKev_Data, Epss_Data, ExploitDb_Data, Euvd_Data, GitHub_Data).
 
 ## License
 
