@@ -59,27 +59,29 @@ function Get-SecurityInfo {
             $epssData = Get-EpssScore -CveId $cve -ErrorAction SilentlyContinue
             $exploitDbData = Get-ExploitDb -CveId $cve -ErrorAction SilentlyContinue
             $euvdData = Get-Euvd -CveId $cve -ErrorAction SilentlyContinue
+            $githubAdvisoryData = Get-GitHubSecurityAdvisory -CveId $cve -ErrorAction SilentlyContinue
 
-            if ($null -eq $nvdData -and $null -eq $cveOrgData -and $null -eq $cisaData -and $null -eq $epssData -and $null -eq $exploitDbData -and $null -eq $euvdData) {
+            if ($null -eq $nvdData -and $null -eq $cveOrgData -and $null -eq $cisaData -and $null -eq $epssData -and $null -eq $exploitDbData -and $null -eq $euvdData -and $null -eq $githubAdvisoryData) {
                 Write-Warning "No information found for '$cve' in any of the available sources."
             }
             else {
                 # Build the output object, prioritizing NVD, but falling back to CveOrg
                 [pscustomobject][ordered]@{
-                    CveId             = $cve
-                    Title             = if ($cveOrgData) { $cveOrgData.Title } elseif ($nvdData) { $nvdData.Description } else { 'N/A' }
-                    Published         = if ($nvdData) { $nvdData.Published } elseif ($cveOrgData) { $cveOrgData.DatePublished } else { 'N/A' }
-                    LastModified      = if ($nvdData) { $nvdData.LastModified } elseif ($cveOrgData) { $cveOrgData.DateUpdated } else { 'N/A' }
-                    Status            = if ($nvdData) { $nvdData.Status } elseif ($cveOrgData) { $cveOrgData.State } else { 'N/A' }
-                    Severity          = if ($nvdData) { $nvdData.CVSSSeverity } elseif ($cveOrgData) { $cveOrgData.Severity } else { 'N/A' }
-                    CVSSScore         = if ($nvdData) { $nvdData.CVSSBaseScore } elseif ($cveOrgData) { $cveOrgData.BaseScore } else { 'N/A' }
-                    Description       = if ($nvdData) { $nvdData.Description } elseif ($cveOrgData) { $cveOrgData.Description } else { 'N/A' }
-                    EPSS_Details      = if ($null -ne $epssData) { $epssData } else { $null }
-                    ExploitDB_Details = if ($null -ne $exploitDbData) { $exploitDbData } else { $false }
-                    CISA_KEV_Details  = if ($null -ne $cisaData) { $cisaData } else { $false }
-                    NVD_Details       = if ($null -ne $nvdData) { $nvdData } else { $false }
-                    CveOrg_Details    = if ($null -ne $cveOrgData) { $cveOrgData } else { $false }
-                    EUVD_Details      = if ($null -ne $euvdData) { $euvdData } else { $false }
+                    CveId                  = $cve
+                    Title                  = if ($cveOrgData) { $cveOrgData.Title } elseif ($nvdData) { $nvdData.Description } else { 'N/A' }
+                    Published              = if ($nvdData) { $nvdData.Published } elseif ($cveOrgData) { $cveOrgData.DatePublished } else { 'N/A' }
+                    LastModified           = if ($nvdData) { $nvdData.LastModified } elseif ($cveOrgData) { $cveOrgData.DateUpdated } else { 'N/A' }
+                    Status                 = if ($nvdData) { $nvdData.Status } elseif ($cveOrgData) { $cveOrgData.State } else { 'N/A' }
+                    Severity               = if ($nvdData) { $nvdData.CVSSSeverity } elseif ($cveOrgData) { $cveOrgData.Severity } else { 'N/A' }
+                    CVSSScore              = if ($nvdData) { $nvdData.CVSSBaseScore } elseif ($cveOrgData) { $cveOrgData.BaseScore } else { 'N/A' }
+                    Description            = if ($nvdData) { $nvdData.Description } elseif ($cveOrgData) { $cveOrgData.Description } else { 'N/A' }
+                    EPSS_Details           = if ($null -ne $epssData) { $epssData } else { $null }
+                    ExploitDB_Details      = if ($null -ne $exploitDbData) { $exploitDbData } else { $false }
+                    CISA_KEV_Details       = if ($null -ne $cisaData) { $cisaData } else { $false }
+                    NVD_Details            = if ($null -ne $nvdData) { $nvdData } else { $false }
+                    CveOrg_Details         = if ($null -ne $cveOrgData) { $cveOrgData } else { $false }
+                    EUVD_Details           = if ($null -ne $euvdData) { $euvdData } else { $false }
+                    GitHubAdvisory_Details = if ($null -ne $githubAdvisoryData) { $githubAdvisoryData } else { $false }
                 }
             }
         }
