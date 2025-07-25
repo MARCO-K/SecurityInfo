@@ -12,7 +12,20 @@ SecurityInfo is a PowerShell module that provides functions to query and analyze
 - Retrieve known exploited vulnerabilities from CISA KEV
 - Search for exploits in Exploit-DB by CVE
 - Get EPSS scores for vulnerabilities from FIRST EPSS
+- Query GitHub Security Advisories by CVE or GHSA ID
 - Filter results by severity, date, affected software, and more
+
+### Query GitHub Security Advisories
+
+```powershell
+# By CVE ID
+Get-GitHubSecurityAdvisory -CveId "2023-12345"
+
+# By GHSA ID
+Get-GitHubSecurityAdvisory -GhsaId "GHSA-xxxx-xxxx-xxxx"
+```
+
+Retrieves security advisory information from GitHub by CVE or GHSA ID. Requires a GitHub Personal Access Token (PAT) in the $env:GITHUB_PAT environment variable.
 
 ## Installation
 
@@ -97,3 +110,4 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 - [Exploit-DB](https://www.exploit-db.com/)
 - [FIRST EPSS](https://www.first.org/epss/)
 - [ENISA EUVD](https://euvd.enisa.europa.eu/apidoc)
+- [GitHub Security Advisories](https://docs.github.com/en/code-security/security-advisories)
