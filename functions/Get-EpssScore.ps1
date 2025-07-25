@@ -48,8 +48,7 @@
     Date: July 2025
     The function uses the public FIRST EPSS API and may be subject to availability or rate limits.
 #>
-function Get-EpssScore
-{
+function Get-EpssScore {
     [CmdletBinding(DefaultParameterSetName = 'ByCveId')]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'ByCveId')]
@@ -71,46 +70,38 @@ function Get-EpssScore
         [double]$PercentileLessThan
     )
 
-    begin
-    {
+    begin {
         $apiUrl = "https://api.first.org/data/v1/epss"
         $params = @{}
 
-        switch ($PSCmdlet.ParameterSetName)
-        {
-            'ByCveId'
-            {
+        switch ($PSCmdlet.ParameterSetName) {
+            'ByCveId' {
                 $CveId = $CveId | ForEach-Object {
                     if (-not $_.StartsWith('CVE-', [System.StringComparison]::OrdinalIgnoreCase)) {
                         "CVE-$_"
-                    } else {
+                    }
+                    else {
                         $_
                     }
                 }
                 $params.cve = $CveId -join ','
                 break
             }
-            'ByDays'
-            {
+            'ByDays' {
                 $params.days = $Days
                 break
             }
-            'ByFilter'
-            {
-                if ($PSBoundParameters.ContainsKey('EpssGreaterThan'))
-                {
+            'ByFilter' {
+                if ($PSBoundParameters.ContainsKey('EpssGreaterThan')) {
                     $params.'epss-gt' = $EpssGreaterThan
                 }
-                if ($PSBoundParameters.ContainsKey('EpssLessThan'))
-                {
+                if ($PSBoundParameters.ContainsKey('EpssLessThan')) {
                     $params.'epss-lt' = $EpssLessThan
                 }
-                if ($PSBoundParameters.ContainsKey('PercentileGreaterThan'))
-                {
+                if ($PSBoundParameters.ContainsKey('PercentileGreaterThan')) {
                     $params.'percentile-gt' = $PercentileGreaterThan
                 }
-                if ($PSBoundParameters.ContainsKey('PercentileLessThan'))
-                {
+                if ($PSBoundParameters.ContainsKey('PercentileLessThan')) {
                     $params.'percentile-lt' = $PercentileLessThan
                 }
                 break
@@ -118,16 +109,20 @@ function Get-EpssScore
         }
     }
 
-    process
-    {
-        try
-        {
-            $response = Invoke-RestMethod -Method Get -Uri $apiUrl -Body $params
+    process {
+        try {
+            Write-Verbose "--- Querying EPSS API: $apiUrl ---"
+            $OriginalVerbosePreference = $VerbosePreference
+            try {
+                $VerbosePreference = 'SilentlyContinue'
+                $response = Invoke-RestMethod -Method Get -Uri $apiUrl -Body $params -ErrorAction Stop
+            }
+            finally {
+                $VerbosePreference = $OriginalVerbosePreference
+            }
 
-            if ($response.data)
-            {
-                foreach ($item in $response.data)
-                {
+            if ($response.data) {
+                foreach ($item in $response.data) {
                     [pscustomobject]@{
                         cveID      = $item.cve
                         epssScore  = [double]$item.epss
@@ -136,14 +131,12 @@ function Get-EpssScore
                     }
                 }
             }
-            else
-            {
+            else {
                 Write-Warning "No EPSS data found for the specified criteria."
                 return $null
             }
         }
-        catch
-        {
+        catch {
             Write-Error "An error occurred while querying the EPSS API: $_"
             return $null
         }

@@ -45,10 +45,18 @@ function Get-CveOrg {
         }
 
         $apiUrl = "https://cveawg.mitre.org/api/cve/$CveId"
-        Write-Verbose "Querying CVE.org API: $apiUrl"
 
         try {
-            $response = Invoke-RestMethod -Method Get -Uri $apiUrl -ErrorAction Stop
+
+            Write-Verbose "--- Querying CVE.org API: $apiUrl ---"
+            $OriginalVerbosePreference = $VerbosePreference
+            try {
+                $VerbosePreference = 'SilentlyContinue'
+                $response = Invoke-RestMethod -Method Get -Uri $apiUrl -ErrorAction Stop
+            }
+            finally {
+                $VerbosePreference = $OriginalVerbosePreference
+            }
 
             $cnaContainer = $response.containers.cna
 

@@ -68,7 +68,7 @@ function Get-GitHubSecurityAdvisory {
                 $identifierValue = $GhsaId
             }
         }
-        Write-Verbose "Querying GitHub for advisory with Identifier Type: $($identifierType), Value: $($identifierValue)"
+        # Write-Verbose "Querying GitHub for advisory with Identifier Type: $($identifierType), Value: $($identifierValue)"
     }
 
     process {
@@ -120,7 +120,16 @@ query {
         $body = @{ query = $query } | ConvertTo-Json
 
         try {
-            $response = Invoke-RestMethod -Uri $uri -Method Post -Headers $headers -Body $body
+            Write-Verbose "--- Querying GitHub API: $uri ---"
+
+            $OriginalVerbosePreference = $VerbosePreference
+            try {
+                $VerbosePreference = 'SilentlyContinue'
+                $response = Invoke-RestMethod -Uri $uri -Method Post -Headers $headers -Body $body
+            }
+            finally {
+                $VerbosePreference = $OriginalVerbosePreference
+            }
 
             $advisoryNode = $response.data.securityAdvisories.nodes[0]
 

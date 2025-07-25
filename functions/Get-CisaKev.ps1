@@ -88,7 +88,16 @@ function Get-CisaKev {
 
     process {
         try {
-            $response = Invoke-RestMethod -Method Get -Uri $apiUrl
+            Write-Verbose "--- Querying CISA KEV API: $apiUrl ---"
+            $OriginalVerbosePreference = $VerbosePreference
+            try {
+                $VerbosePreference = 'SilentlyContinue'
+                $response = Invoke-RestMethod -Method Get -Uri $apiUrl -ErrorAction Stop
+            }
+            finally {
+                $VerbosePreference = $OriginalVerbosePreference
+            }
+
             $results = $response | ForEach-Object {
                 [pscustomobject]@{
                     "cveID"             = $_.cveID

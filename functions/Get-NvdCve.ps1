@@ -56,8 +56,7 @@
     Ensure you have the required permissions to access the NVD API.
     The API has rate limits; avoid excessive requests in a short time.
 #>
-function Get-NvdCve
-{
+function Get-NvdCve {
     [CmdletBinding(DefaultParameterSetName = 'ByKeyword')]
     [OutputType([pscustomobject])]
     [Alias('Get-NvdCveDetails', 'NvdCve')]
@@ -83,22 +82,17 @@ function Get-NvdCve
         [switch]$IncludeAffectedSoftware
     )
 
-    begin
-    {
+    begin {
         $baseApiUrl = "https://services.nvd.nist.gov/rest/json/cves/2.0"
         $requestUrl = $baseApiUrl
-        $params = @{}
+        $params = [ordered]@{}
 
-        switch ($PSCmdlet.ParameterSetName)
-        {
-            'ByKeyword'
-            {
+        switch ($PSCmdlet.ParameterSetName) {
+            'ByKeyword' {
                 $params.keywordSearch = $Keyword
             }
-            'ByDays'
-            {
-                if ($Days -gt 120)
-                {
+            'ByDays' {
+                if ($Days -gt 120) {
                     throw "The value for -Days cannot exceed 120."
                 }
                 $endDateValue = (Get-Date).ToUniversalTime()
@@ -106,8 +100,7 @@ function Get-NvdCve
                 $params.pubStartDate = $startDateValue.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
                 $params.pubEndDate = $endDateValue.ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
             }
-            'ByCveId'
-            {
+            'ByCveId' {
                 if (-not $CveId.StartsWith('CVE-', [System.StringComparison]::OrdinalIgnoreCase)) {
                     $CveId = "CVE-$CveId"
                 }
@@ -117,15 +110,16 @@ function Get-NvdCve
 
         # --- Add common optional parameters if they were bound ---
         # Add Severity if specified (applies to ByKeyword and ByDays)
-        if ($PSBoundParameters.ContainsKey('Severity'))
-        {
+        if ($PSBoundParameters.ContainsKey('Severity')) {
             $params.cvssV3Severity = $Severity
         }
 
         # Add Top/resultsPerPage and startIndex (applies to ByKeyword and ByDays, harmless for ByCveId)
         # We always set startIndex to 0 for simplicity, could be a new parameter for full pagination
-        $params.resultsPerPage = $Top
-        $params.startIndex = 0
+        if ($PSBoundParameters.ContainsKey('Top')) {
+            $params.resultsPerPage = $Top
+            $params.startIndex = 0
+        }
 
         # --- Construct the Query String ---
         # This collects all key=value pairs and joins them with '&'
@@ -139,53 +133,37 @@ function Get-NvdCve
         # --- Combine Base URL and Query String ---
         $requestUrl = "$baseApiUrl`?$queryString"
 
-
-        Write-Verbose "Final Request URL: $requestUrl"
-
-
     }
 
-    process
-    {
-        try
-        {
+    process {
+        try {
+            Write-Verbose "--- Querying NVD API: $requestUrl ---"
 
-            $response = Invoke-RestMethod -Method Get -Uri $requestUrl
+            $OriginalVerbosePreference = $VerbosePreference
+            try {
+                $VerbosePreference = 'SilentlyContinue'
+                $response = Invoke-RestMethod -Method Get -Uri $requestUrl -ErrorAction Stop
+            }
+            finally {
+                $VerbosePreference = $OriginalVerbosePreference
+            }
 
-            if ($response.vulnerabilities)
-            {
-                foreach ($vulnerability in $response.vulnerabilities)
-                {
+
+            if ($response.totalResults -gt 0) {
+
+                foreach ($vulnerability in $response.vulnerabilities) {
                     $cve = $vulnerability.cve
 
                     # --- cwe handling ---
-                    if ($cve.weaknesses -and $cve.weaknesses.Count -gt 0)
-                    {
-                        $cweIDs =
-                        foreach ($weakness in $cve.weaknesses)
-                        {
-                            if ($weakness.description -and $weakness.description.Count -gt 0)
-                            {
-                                # Assuming the first description value is the CWE ID (e.g., "CWE-89")
-                                $cweIdText = $weakness.description[0].value
-                                # Extract just the "CWE-XXX" part using regex if needed, or take as is
-                                if ($cweIdText -match '^(CWE-\d+)$')
-                                {
-                                    $Matches[1] # Add the extracted CWE ID (e.g., "CWE-89")
-                                }
-                            }
-                        }
-                    }
+                    $cweIds = ($cve.weaknesses.description.value | Where-Object { $_ -like 'CWE-*' }) -join ', '
+
 
 
                     # Initialize variables for severity and score
-                    $CVSSSeverity = "N/A"
-                    $baseScore = "N/A"
-                    $cvssVersion = "N/A"
+                    $CVSSSeverity, $baseScore, $cvssVersion = "N/A", "N/A", "N/A"
 
                     # 1. Prioritize CVSS v4.0
-                    if ($cve.metrics.cvssMetricV40 -and $cve.metrics.cvssMetricV40.Count -gt 0)
-                    {
+                    if ($cve.metrics.cvssMetricV40 -and $cve.metrics.cvssMetricV40.Count -gt 0) {
                         # Assuming the first metric is the primary one
                         $cvssV40 = $cve.metrics.cvssMetricV40[0]
                         $CVSSSeverity = $cvssV40.cvssData.baseSeverity # BaseSeverity for v4.0
@@ -193,8 +171,7 @@ function Get-NvdCve
                         $cvssVersion = "4.0"
                     }
                     # 2. Fall back to CVSS v3.1 if v4.0 is not available
-                    elseif ($cve.metrics.cvssMetricV31 -and $cve.metrics.cvssMetricV31.Count -gt 0)
-                    {
+                    elseif ($cve.metrics.cvssMetricV31 -and $cve.metrics.cvssMetricV31.Count -gt 0) {
                         # Assuming the first metric is the primary one
                         $cvssV31 = $cve.metrics.cvssMetricV31[0]
                         $CVSSSeverity = $cvssV31.cvssData.baseSeverity # BaseSeverity for v3.1
@@ -217,23 +194,32 @@ function Get-NvdCve
 
                     }
                     # Conditionally add AffectedVendors and AffectedProducts to the output object
-                    if ($IncludeAffectedSoftware)
-                    {
-                        $cveOutput | Add-Member -MemberType NoteProperty -Name AffectedVendors -Value $affectedVendors -Force
-                        $cveOutput | Add-Member -MemberType NoteProperty -Name AffectedProducts -Value $affectedProducts -Force
-                        $cveOutput | Add-Member -MemberType NoteProperty -Name FullCPEURIs -Value ($cpeUris -join ', ')
+                    # --- CRITICAL FIX: Add logic to populate affected software details ---
+                    if ($IncludeAffectedSoftware) {
+                        $cpeUris = @()
+                        # Traverse the complex 'configurations' node to find all CPE URIs
+                        if ($cve.configurations) {
+                            $cpeUris = $cve.configurations.nodes.cpeMatch.criteria
+                        }
+
+                        # From the CPEs, extract unique vendors and products
+                        $affectedVendors = $cpeUris | ForEach-Object { $_.Split(':')[3] } | Sort-Object -Unique
+                        $affectedProducts = $cpeUris | ForEach-Object { $_.Split(':')[4] } | Sort-Object -Unique
+
+                        $cveOutput | Add-Member -MemberType NoteProperty -Name AffectedVendors -Value ($affectedVendors -join ', ')
+                        $cveOutput | Add-Member -MemberType NoteProperty -Name AffectedProducts -Value ($affectedProducts -join ', ')
                     }
+
+
                     $cveOutput # Output the final object
                 }
 
             }
-            else
-            {
+            else {
                 Write-Warning "No CVEs found for the specified criteria."
             }
         }
-        catch
-        {
+        catch {
             Write-Error "An error occurred while querying the NVD API: $_"
         }
     }

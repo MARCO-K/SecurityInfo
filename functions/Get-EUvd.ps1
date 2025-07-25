@@ -37,6 +37,9 @@ function Get-Euvd {
         [Parameter(Mandatory = $true, ParameterSetName = 'ByCveId')]
         [string]$CveId,
 
+        [Parameter(Mandatory = $true, ParameterSetName = 'ByEUVDId')]
+        [string]$EuvdId,
+
         [Parameter(Mandatory = $true, ParameterSetName = 'ByKeyword')]
         [string]$Keyword
 
@@ -48,14 +51,17 @@ function Get-Euvd {
 
         switch ($PSCmdlet.ParameterSetName) {
             'ByCveId' {
-                if (-not $CveId.StartsWith('EUVD-', [System.StringComparison]::OrdinalIgnoreCase)) {
-                    # Remove CVE- prefix if present, then prepend EUVD-
-                    if ($CveId.StartsWith('CVE-', [System.StringComparison]::OrdinalIgnoreCase)) {
-                        $CveId = $CveId.Substring(4)
-                    }
-                    $CveId = "EUVD-$CveId"
+                if (-not $CveId.StartsWith('CVE-', [System.StringComparison]::OrdinalIgnoreCase)) {
+                    $CveId = "CVE-$CveId"
                 }
                 $apiUrl = "$($baseApiUrl)enisaid?id=$CveId"
+            }
+            'ByEUVDId' {
+                # Remove CVE- prefix if present, then prepend EUVD-
+                if (-not $EuvdId.StartsWith('EUVD-', [System.StringComparison]::OrdinalIgnoreCase)) {
+                    $EuvdId = "EUVD-$EuvdId"
+                }
+                $apiUrl = "$($baseApiUrl)enisaid?id=$EuvdId"
             }
             'ByKeyword' {
                 $apiUrl = "$($baseApiUrl)search?text=$Keyword"
@@ -64,8 +70,16 @@ function Get-Euvd {
     }
     process {
         try {
-            $response = Invoke-RestMethod -Method Get -Uri $apiUrl -ErrorAction Stop
-            Write-Verbose "Querying EUVD API: $apiUrl"
+            Write-Verbose "--- Querying EUVD API: $apiUrl ---"
+
+            $OriginalVerbosePreference = $VerbosePreference
+            try {
+                $VerbosePreference = 'SilentlyContinue'
+                $response = Invoke-RestMethod -Method Get -Uri $apiUrl -ErrorAction Stop
+            }
+            finally {
+                $VerbosePreference = $OriginalVerbosePreference
+            }
 
             if ($PSCmdlet.ParameterSetName -eq 'ByCveId' -and -not $response.PSObject.Properties['ID']) {
                 Write-Verbose "API returned an empty object for ID '$CveId'. No match found."
@@ -85,15 +99,20 @@ function Get-Euvd {
 
             $results = foreach ($item in $itemsToProcess) {
                 [pscustomobject]@{
-                    EuvdId       = $item.ID
-                    Description  = $item.description
+                    EuvdId         = $item.ID
+                    Description    = $item.description
                     # Convert dates to [datetime] objects for better usability (sorting, filtering)
-                    Published    = if ($item.datePublished) { [datetime]$item.datePublished } else { $null }
-                    LastModified = if ($item.dateUpdated) { [datetime]$item.dateUpdated } else { $null }
-                    Severity     = $item.severity
-                    CVSSScore    = $item.baseScore
-                    Vector       = $item.baseScoreVector
-                    Vendor       = $item.enisaIdVendor.vendor.Name
+                    Published      = if ($item.datePublished) { [datetime]$item.datePublished } else { $null }
+                    LastModified   = if ($item.dateUpdated) { [datetime]$item.dateUpdated } else { $null }
+                    CVSSScore      = $item.baseScore
+                    Vector         = $item.baseScoreVector
+                    Vendor         = $item.enisaIdVendor.vendor.Name
+                    ProductDetails = foreach ($product in $item.enisaIdProduct) {
+                        [pscustomobject]@{
+                            ProductName    = $product.product.Name
+                            ProductVersion = $product.product_version
+                        }
+                    }
                 }
             }
 
