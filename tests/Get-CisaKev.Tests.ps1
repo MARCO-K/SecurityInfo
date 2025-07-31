@@ -1,13 +1,8 @@
-# Tests for Get-CisaKev function
-
-# Import the function to be tested
-. "$PSScriptRoot/../functions/Get-CisaKev.ps1"
 
 Describe 'Get-CisaKev' {
-    # Mock Invoke-RestMethod to avoid actual API calls
-    BeforeAll {
+    BeforeEach {
         # Mock data for a single CVE
-        $mockCveData = @{
+        $script:mockCveData = @{
             cveID             = "CVE-2023-12345"
             vendorProject     = "TestVendor"
             product           = "TestProduct"
@@ -21,8 +16,7 @@ Describe 'Get-CisaKev' {
             kevInSince        = "2023-01-01"
         }
 
-        # Mock data for recent vulnerabilities
-        $mockRecentData = @(
+        $script:mockRecentData = @(
             @{
                 cveID             = "CVE-2024-0001"
                 vendorProject     = "VendorA"
@@ -51,31 +45,27 @@ Describe 'Get-CisaKev' {
             }
         )
 
-        # Mock for severity filtering
-        $mockVulnDetailsHigh = @{ cvssV3_severity = 'HIGH' }
-        $mockVulnDetailsCritical = @{ cvssV3_severity = 'CRITICAL' }
+        $script:mockVulnDetailsHigh = @{ cvssV3_severity = 'HIGH' }
+        $script:mockVulnDetailsCritical = @{ cvssV3_severity = 'CRITICAL' }
 
-
-        # General Mock for Invoke-RestMethod
         Mock -CommandName Invoke-RestMethod -MockWith {
             param($Uri)
             if ($Uri -like '*vulnerabilities/id/CVE-2023-12345*') {
-                return $mockCveData
+                return $script:mockCveData
             }
             if ($Uri -like '*kev/recent?days=7*') {
-                return $mockRecentData
+                return $script:mockRecentData
             }
             if ($Uri -like '*vulnerabilities/search?q=TestKeyword*') {
-                return $mockRecentData
+                return $script:mockRecentData
             }
             if ($Uri -like '*vuln/CVE-2024-0001*') {
-                return $mockVulnDetailsHigh
+                return $script:mockVulnDetailsHigh
             }
             if ($Uri -like '*vuln/CVE-2024-0002*') {
-                return $mockVulnDetailsCritical
+                return $script:mockVulnDetailsCritical
             }
             if ($Uri -like '*vulnerabilities/id/CVE-9999-9999*') {
-                # Simulate a "not found" error from the API
                 $errorRecord = [System.Management.Automation.ErrorRecord]::new(
                     (New-Object System.Exception "The remote server returned an error: (404) Not Found."),
                     'KEVinApiNotFound',
@@ -88,30 +78,31 @@ Describe 'Get-CisaKev' {
                 throw $errorRecord
             }
         }
+        . "$PSScriptRoot/../functions/Get-CisaKev.ps1"
     }
 
     Context 'ByCveId' {
-        It 'Should return a single vulnerability for a specific CVE ID' {
+        It 'returns a single vulnerability for a specific CVE ID' {
             $result = Get-CisaKev -CveId "CVE-2023-12345"
             $result | Should -Not -BeNull
             $result.cveID | Should -Be "CVE-2023-12345"
             $result.vendorProject | Should -Be "TestVendor"
         }
 
-        It 'Should handle CVE IDs without the "CVE-" prefix' {
+        It 'handles CVE IDs without the "CVE-" prefix' {
             $result = Get-CisaKev -CveId "2023-12345"
             $result | Should -Not -BeNull
             $result.cveID | Should -Be "CVE-2023-12345"
         }
 
-        It 'Should return nothing for a CVE that is not found' {
+        It 'returns nothing for a CVE that is not found' {
             $result = Get-CisaKev -CveId "CVE-9999-9999" -Verbose
             $result | Should -BeNull
         }
     }
 
     Context 'ByDays' {
-        It 'Should return a list of recent vulnerabilities' {
+        It 'returns a list of recent vulnerabilities' {
             $result = Get-CisaKev -Days 7
             $result | Should -Not -BeNull
             ($result | Measure-Object).Count | Should -Be 2
@@ -120,7 +111,7 @@ Describe 'Get-CisaKev' {
     }
 
     Context 'ByKeyword' {
-        It 'Should return a list of vulnerabilities matching the keyword' {
+        It 'returns a list of vulnerabilities matching the keyword' {
             $result = Get-CisaKev -Keyword "TestKeyword"
             $result | Should -Not -BeNull
             ($result | Measure-Object).Count | Should -Be 2
@@ -129,14 +120,14 @@ Describe 'Get-CisaKev' {
     }
 
     Context 'With Severity Filter' {
-        It 'Should return only CRITICAL vulnerabilities when -Severity CRITICAL is used' {
+        It 'returns only CRITICAL vulnerabilities when -Severity CRITICAL is used' {
             $result = Get-CisaKev -Days 7 -Severity 'CRITICAL'
             $result | Should -Not -BeNull
             ($result | Measure-Object).Count | Should -Be 1
             $result.cveID | Should -Be "CVE-2024-0002"
         }
 
-        It 'Should return only HIGH vulnerabilities when -Severity HIGH is used' {
+        It 'returns only HIGH vulnerabilities when -Severity HIGH is used' {
             $result = Get-CisaKev -Days 7 -Severity 'HIGH'
             $result | Should -Not -BeNull
             ($result | Measure-Object).Count | Should -Be 1
