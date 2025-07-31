@@ -36,20 +36,12 @@ Describe 'Get-CveOrg' {
             switch -Wildcard ($Uri) {
                 '*api/cve/CVE-2023-12345*' { return $script:mockCveData }
                 '*api/cve/CVE-9999-9999*' {
-                    $response = [pscustomobject]@{ StatusCode = 'NotFound' }
-                    $exception = [Microsoft.PowerShell.Commands.HttpResponseException]::new(
-                        "Response status code does not indicate success: 404 (Not Found).",
-                        $response
-                    )
-                    throw $exception
+                    # Throw an exception with 404 in the message for our error handler to catch
+                    throw "Response status code does not indicate success: 404 (Not Found)."
                 }
                 '*api/cve/CVE-5000-5000*' {
-                    $response = [pscustomobject]@{ StatusCode = 'InternalServerError' }
-                    $exception = [Microsoft.PowerShell.Commands.HttpResponseException]::new(
-                        "Response status code does not indicate success: 500 (Internal Server Error).",
-                        $response
-                    )
-                    throw $exception
+                    # Throw an exception with 500 in the message for our error handler to catch
+                    throw "Response status code does not indicate success: 500 (Internal Server Error)."
                 }
             }
         }

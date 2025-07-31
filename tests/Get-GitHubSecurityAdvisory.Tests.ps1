@@ -123,7 +123,17 @@ Describe 'Get-GitHubSecurityAdvisory' {
 
         # Mock for Invoke-RestMethod
         Mock -CommandName Invoke-RestMethod -MockWith {
-            param($Uri, $Method, $Headers, $Body)
+            param(
+                $Uri,
+                $Method,
+                $Headers,
+                $Body
+            )
+
+            # Reference unused parameters to avoid PSScriptAnalyzer warnings
+            $null = $Uri
+            $null = $Method
+            $null = $Headers
 
             # Parse the GraphQL query to determine what to return
             $bodyObj = $Body | ConvertFrom-Json

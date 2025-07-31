@@ -185,7 +185,10 @@ query {
                 try {
                     $errorDetail = $_.Exception.Response.GetResponseStream() | New-Object System.IO.StreamReader | ForEach-Object { $_.ReadToEnd() }
                 }
-                catch {}
+                catch {
+                    # If we can't read the response stream, fall back to the basic exception message
+                    Write-Verbose "Could not read response stream: $($_.Exception.Message)"
+                }
             }
             if (-not $errorDetail) {
                 $errorDetail = $_.Exception.Message

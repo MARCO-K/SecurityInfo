@@ -105,6 +105,9 @@ Describe "Get-NvdCve" {
         Mock -CommandName Invoke-RestMethod -MockWith {
             param($Uri, $Method)
 
+            # Reference unused parameter to avoid PSScriptAnalyzer warning
+            $null = $Method
+
             # Check URI to determine what to return
             if ($Uri -match 'keywordSearch=nonexistent' -or $Uri -match 'cveId=CVE-9999-9999') {
                 return $script:mockEmptyResponse

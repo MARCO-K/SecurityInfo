@@ -105,16 +105,27 @@ function Get-CveOrg {
 
             $outputObject # Return the object
         }
-        catch [Microsoft.PowerShell.Commands.HttpResponseException] {
-            if ($_.Exception.Response.StatusCode -eq 'NotFound') {
+        catch {
+            # Check if it's an HTTP response exception by examining the exception message or type
+            if ($_.Exception -is [System.Net.WebException] -and $_.Exception.Response) {
+                $statusCode = $_.Exception.Response.StatusCode
+                if ($statusCode -eq 'NotFound') {
+                    Write-Warning "CVE record for '$CveId' not found on cve.org."
+                }
+                else {
+                    Write-Error "An API error occurred while querying cve.org: Response status code does not indicate success: $statusCode ($($_.Exception.Response.StatusDescription))."
+                }
+            }
+            elseif ($_.Exception.Message -match "404|Not Found") {
                 Write-Warning "CVE record for '$CveId' not found on cve.org."
             }
-            else {
+            elseif ($_.Exception.Message -match "\d{3}") {
+                # Extract status code from error message if possible
                 Write-Error "An API error occurred while querying cve.org: $($_.Exception.Message)"
             }
-        }
-        catch {
-            Write-Error "An unexpected error occurred: $_"
+            else {
+                Write-Error "An unexpected error occurred: $_"
+            }
         }
     }
 }

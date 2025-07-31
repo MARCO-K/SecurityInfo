@@ -37,6 +37,9 @@ Describe 'Get-EpssScore' {
         Mock -CommandName Invoke-RestMethod -MockWith {
             param($Uri, $Body)
 
+            # Suppress unused parameter warnings for test mocks
+            $null = $Uri
+
             if ($Body.cve -eq 'CVE-2023-12345,CVE-2022-54321') {
                 return $script:mockEpssData
             }
