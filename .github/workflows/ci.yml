@@ -1,72 +1,72 @@
 name: PowerShell Module CI
 
 on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
+    push:
+        branches: [main, develop]
+    pull_request:
+        branches: [main]
 
 jobs:
-  test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
-        powershell-version: ['5.1', '7.x']
-        exclude:
-          # PowerShell 5.1 is Windows only
-          - os: ubuntu-latest
-            powershell-version: '5.1'
-          - os: macos-latest
-            powershell-version: '5.1'
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup PowerShell
-      uses: actions/setup-powershell@v1
-      if: matrix.powershell-version == '7.x'
-    
-    - name: Install Pester
-      shell: pwsh
-      run: |
-        if (-not (Get-Module -ListAvailable -Name Pester)) {
-          Install-Module -Name Pester -Force -Scope CurrentUser -SkipPublisherCheck
-        }
-    
-    - name: Run Tests
-      shell: pwsh
-      run: |
-        $testResults = Invoke-Pester -Path "tests\" -OutputFormat NUnitXml -OutputFile "TestResults.xml" -PassThru
-        if ($testResults.FailedCount -gt 0) {
-          throw "Tests failed: $($testResults.FailedCount) failed out of $($testResults.TotalCount)"
-        }
-    
-    - name: Upload Test Results
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: test-results-${{ matrix.os }}-ps${{ matrix.powershell-version }}
-        path: TestResults.xml
+    test:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [windows-latest, ubuntu-latest, macos-latest]
+                powershell-version: ['5.1', '7.x']
+                exclude:
+                    # PowerShell 5.1 is Windows only
+                    - os: ubuntu-latest
+                      powershell-version: '5.1'
+                    - os: macos-latest
+                      powershell-version: '5.1'
 
-  publish:
-    needs: test
-    runs-on: windows-latest
-    if: github.ref == 'refs/heads/main'
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup PowerShell
-      uses: actions/setup-powershell@v1
-    
-    - name: Publish to PowerShell Gallery
-      shell: pwsh
-      env:
-        NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: |
-        if ($env:NUGET_API_KEY) {
-          Publish-Module -Path . -NuGetApiKey $env:NUGET_API_KEY -Verbose
-        } else {
-          Write-Warning "NUGET_API_KEY not found - skipping publish"
-        }
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup PowerShell
+              uses: actions/setup-powershell@v1
+              if: matrix.powershell-version == '7.x'
+
+            - name: Install Pester
+              shell: pwsh
+              run: |
+                  if (-not (Get-Module -ListAvailable -Name Pester)) {
+                    Install-Module -Name Pester -Force -Scope CurrentUser -SkipPublisherCheck
+                  }
+
+            - name: Run Tests
+              shell: pwsh
+              run: |
+                  $testResults = Invoke-Pester -Path "tests/" -OutputFormat NUnitXml -OutputFile "TestResults.xml" -PassThru
+                  if ($testResults.FailedCount -gt 0) {
+                    throw "Tests failed: $($testResults.FailedCount) failed out of $($testResults.TotalCount)"
+                  }
+
+            - name: Upload Test Results
+              uses: actions/upload-artifact@v4
+              if: always()
+              with:
+                  name: test-results-${{ matrix.os }}-ps${{ matrix.powershell-version }}
+                  path: TestResults.xml
+
+    publish:
+        needs: test
+        runs-on: windows-latest
+        if: github.ref == 'refs/heads/main'
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup PowerShell
+              uses: actions/setup-powershell@v1
+
+            - name: Publish to PowerShell Gallery
+              shell: pwsh
+              env:
+                  NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+              run: |
+                  if ($env:NUGET_API_KEY) {
+                    Publish-Module -Path . -NuGetApiKey $env:NUGET_API_KEY -Verbose
+                  } else {
+                    Write-Warning "NUGET_API_KEY not found - skipping publish"
+                  }
