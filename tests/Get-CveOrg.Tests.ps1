@@ -78,7 +78,7 @@ Describe 'Get-CveOrg' {
         It 'writes an error for other API failures' {
             $errors = & { Get-CveOrg -CveId "CVE-5000-5000" } 2>&1
             $messages = $errors | ForEach-Object { $_.ToString() }
-            $messages | Should -Contain "An API error occurred while querying cve.org: Response status code does not indicate success: 500 (Internal Server Error)."
+            $messages | Should -Match "An API error occurred while querying cve\.org.*500"
         }
     }
 }

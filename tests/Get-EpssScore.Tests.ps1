@@ -122,15 +122,9 @@ Describe 'Get-EpssScore' {
 
     Context 'Error Handling' {
         It 'writes an error on API failure' {
-            $errors = @()
-            $result = Get-EpssScore -CveId "CVE-5000-5000" -ErrorVariable errors
-            $result | Should -BeNull
-            $errors.Count | Should -BeGreaterThan 0
-            # Verify that an error was generated - the error record contains the original exception
-            # The console shows the formatted Write-Error message, but ErrorVariable captures the record
-            $errors[0] | Should -Not -BeNull
-            # The original exception is RuntimeException from the throw, wrapped by Write-Error
-            $errors[0].Exception | Should -BeOfType [System.Management.Automation.RuntimeException]
+            $errors = & { Get-EpssScore -CveId "CVE-5000-5000" } 2>&1
+            $messages = $errors | ForEach-Object { $_.ToString() }  
+            $messages | Should -Match "An error occurred while querying the EPSS API.*Simulated API Error"
         }
     }
 

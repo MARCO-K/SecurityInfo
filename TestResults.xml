@@ -1,0 +1,414 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-results xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="nunit_schema_2.5.xsd" name="Pester" total="137" errors="0" failures="0" not-run="0" inconclusive="0" ignored="0" skipped="0" invalid="0" date="2025-07-31" time="16:34:17">
+  <environment clr-version="4.0.30319.42000" user-domain="AzureAD" cwd="C:\tools\personal\git\SecurityInfo" platform="Microsoft Windows 11 Enterprise|C:\WINDOWS|\Device\Harddisk0\Partition3" machine-name="PC-MARCO" nunit-version="2.5.8.0" os-version="10.0.26100" user="MarcoKleinert" />
+  <culture-info current-culture="de-DE" current-uiculture="de-DE" />
+  <test-suite type="TestFixture" name="Pester" executed="True" result="Success" success="True" time="6.9249" asserts="0" description="Pester">
+    <results>
+      <test-suite type="TestFixture" name="C:\tools\personal\git\SecurityInfo\tests\Get-CisaKev.Tests.ps1" executed="True" result="Success" success="True" time="0.3432" asserts="0" description="C:\tools\personal\git\SecurityInfo\tests\Get-CisaKev.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-CisaKev" executed="True" result="Success" success="True" time="0.2442" asserts="0" description="Get-CisaKev">
+            <results>
+              <test-suite type="TestFixture" name="Get-CisaKev.ByCveId" executed="True" result="Success" success="True" time="0.0908" asserts="0" description="Get-CisaKev.ByCveId">
+                <results>
+                  <test-case description="returns a single vulnerability for a specific CVE ID" name="Get-CisaKev.ByCveId.returns a single vulnerability for a specific CVE ID" time="0.0317" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles CVE IDs without the &quot;CVE-&quot; prefix" name="Get-CisaKev.ByCveId.handles CVE IDs without the &quot;CVE-&quot; prefix" time="0.0242" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="returns nothing for a CVE that is not found" name="Get-CisaKev.ByCveId.returns nothing for a CVE that is not found" time="0.0283" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-CisaKev.ByDays" executed="True" result="Success" success="True" time="0.1263" asserts="0" description="Get-CisaKev.ByDays">
+                <results>
+                  <test-case description="returns a list of recent vulnerabilities" name="Get-CisaKev.ByDays.returns a list of recent vulnerabilities" time="0.0295" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-CisaKev.ByKeyword" executed="True" result="Success" success="True" time="0.1625" asserts="0" description="Get-CisaKev.ByKeyword">
+                <results>
+                  <test-case description="returns a list of vulnerabilities matching the keyword" name="Get-CisaKev.ByKeyword.returns a list of vulnerabilities matching the keyword" time="0.0299" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-CisaKev.With Severity Filter" executed="True" result="Success" success="True" time="0.2381" asserts="0" description="Get-CisaKev.With Severity Filter">
+                <results>
+                  <test-case description="returns only CRITICAL vulnerabilities when -Severity CRITICAL is used" name="Get-CisaKev.With Severity Filter.returns only CRITICAL vulnerabilities when -Severity CRITICAL is used" time="0.0359" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="returns only HIGH vulnerabilities when -Severity HIGH is used" name="Get-CisaKev.With Severity Filter.returns only HIGH vulnerabilities when -Severity HIGH is used" time="0.0332" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\tools\personal\git\SecurityInfo\tests\Get-CveOrg.Tests.ps1" executed="True" result="Success" success="True" time="0.2278" asserts="0" description="C:\tools\personal\git\SecurityInfo\tests\Get-CveOrg.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-CveOrg" executed="True" result="Success" success="True" time="0.155" asserts="0" description="Get-CveOrg">
+            <results>
+              <test-suite type="TestFixture" name="Get-CveOrg.Successful Lookups" executed="True" result="Success" success="True" time="0.089" asserts="0" description="Get-CveOrg.Successful Lookups">
+                <results>
+                  <test-case description="returns a formatted object for a valid CVE ID" name="Get-CveOrg.Successful Lookups.returns a formatted object for a valid CVE ID" time="0.0342" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles CVE IDs without the &quot;CVE-&quot; prefix" name="Get-CveOrg.Successful Lookups.handles CVE IDs without the &quot;CVE-&quot; prefix" time="0.0241" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="works with pipeline input" name="Get-CveOrg.Successful Lookups.works with pipeline input" time="0.0244" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-CveOrg.Error Handling" executed="True" result="Success" success="True" time="0.1492" asserts="0" description="Get-CveOrg.Error Handling">
+                <results>
+                  <test-case description="warns the user when a CVE is not found (404)" name="Get-CveOrg.Error Handling.warns the user when a CVE is not found (404)" time="0.0278" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="writes an error for other API failures" name="Get-CveOrg.Error Handling.writes an error for other API failures" time="0.026" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\tools\personal\git\SecurityInfo\tests\Get-EpssScore.Tests.ps1" executed="True" result="Success" success="True" time="0.3467" asserts="0" description="C:\tools\personal\git\SecurityInfo\tests\Get-EpssScore.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-EpssScore" executed="True" result="Success" success="True" time="0.2572" asserts="0" description="Get-EpssScore">
+            <results>
+              <test-suite type="TestFixture" name="Get-EpssScore.ByCveId Parameter Set" executed="True" result="Success" success="True" time="0.093" asserts="0" description="Get-EpssScore.ByCveId Parameter Set">
+                <results>
+                  <test-case description="returns scores for multiple CVEs" name="Get-EpssScore.ByCveId Parameter Set.returns scores for multiple CVEs" time="0.0343" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles CVEs without the CVE- prefix" name="Get-EpssScore.ByCveId Parameter Set.handles CVEs without the CVE- prefix" time="0.0269" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="returns null and warns when no data is found" name="Get-EpssScore.ByCveId Parameter Set.returns null and warns when no data is found" time="0.0235" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-EpssScore.ByDays Parameter Set" executed="True" result="Success" success="True" time="0.1281" asserts="0" description="Get-EpssScore.ByDays Parameter Set">
+                <results>
+                  <test-case description="returns scores for recent days" name="Get-EpssScore.ByDays Parameter Set.returns scores for recent days" time="0.0267" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-EpssScore.ByFilter Parameter Set" executed="True" result="Success" success="True" time="0.1629" asserts="0" description="Get-EpssScore.ByFilter Parameter Set">
+                <results>
+                  <test-case description="returns scores filtered by EpssGreaterThan" name="Get-EpssScore.ByFilter Parameter Set.returns scores filtered by EpssGreaterThan" time="0.0265" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-EpssScore.Error Handling" executed="True" result="Success" success="True" time="0.2123" asserts="0" description="Get-EpssScore.Error Handling">
+                <results>
+                  <test-case description="writes an error on API failure" name="Get-EpssScore.Error Handling.writes an error on API failure" time="0.0432" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-EpssScore.Data Type Validation" executed="True" result="Success" success="True" time="0.2513" asserts="0" description="Get-EpssScore.Data Type Validation">
+                <results>
+                  <test-case description="converts string values to proper types" name="Get-EpssScore.Data Type Validation.converts string values to proper types" time="0.0326" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\tools\personal\git\SecurityInfo\tests\Get-EUvd.Tests.ps1" executed="True" result="Success" success="True" time="0.4843" asserts="0" description="C:\tools\personal\git\SecurityInfo\tests\Get-EUvd.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-Euvd" executed="True" result="Success" success="True" time="0.3942" asserts="0" description="Get-Euvd">
+            <results>
+              <test-suite type="TestFixture" name="Get-Euvd.ByCveId Parameter Set" executed="True" result="Success" success="True" time="0.0879" asserts="0" description="Get-Euvd.ByCveId Parameter Set">
+                <results>
+                  <test-case description="returns vulnerability details for CVE ID" name="Get-Euvd.ByCveId Parameter Set.returns vulnerability details for CVE ID" time="0.0337" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles CVE IDs without the CVE- prefix" name="Get-Euvd.ByCveId Parameter Set.handles CVE IDs without the CVE- prefix" time="0.0263" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="returns nothing when no data is found" name="Get-Euvd.ByCveId Parameter Set.returns nothing when no data is found" time="0.0215" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-Euvd.ByEUVDId Parameter Set" executed="True" result="Success" success="True" time="0.1501" asserts="0" description="Get-Euvd.ByEUVDId Parameter Set">
+                <results>
+                  <test-case description="returns vulnerability details for EUVD ID" name="Get-Euvd.ByEUVDId Parameter Set.returns vulnerability details for EUVD ID" time="0.0293" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles EUVD IDs without the EUVD- prefix" name="Get-Euvd.ByEUVDId Parameter Set.handles EUVD IDs without the EUVD- prefix" time="0.0266" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-Euvd.ByKeyword Parameter Set" executed="True" result="Success" success="True" time="0.2128" asserts="0" description="Get-Euvd.ByKeyword Parameter Set">
+                <results>
+                  <test-case description="returns search results for keyword" name="Get-Euvd.ByKeyword Parameter Set.returns search results for keyword" time="0.0327" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="returns nothing when keyword search finds no results" name="Get-Euvd.ByKeyword Parameter Set.returns nothing when keyword search finds no results" time="0.0236" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-Euvd.Error Handling" executed="True" result="Success" success="True" time="0.2576" asserts="0" description="Get-Euvd.Error Handling">
+                <results>
+                  <test-case description="writes an error on API failure" name="Get-Euvd.Error Handling.writes an error on API failure" time="0.0363" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-Euvd.Data Type Validation" executed="True" result="Success" success="True" time="0.3586" asserts="0" description="Get-Euvd.Data Type Validation">
+                <results>
+                  <test-case description="converts date strings to proper datetime types" name="Get-Euvd.Data Type Validation.converts date strings to proper datetime types" time="0.0382" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="properly structures product details" name="Get-Euvd.Data Type Validation.properly structures product details" time="0.0292" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles null date values gracefully" name="Get-Euvd.Data Type Validation.handles null date values gracefully" time="0.0272" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-Euvd.Parameter Set Validation" executed="True" result="Success" success="True" time="0.3863" asserts="0" description="Get-Euvd.Parameter Set Validation">
+                <results>
+                  <test-case description="requires exactly one parameter set" name="Get-Euvd.Parameter Set Validation.requires exactly one parameter set" time="0.0214" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\tools\personal\git\SecurityInfo\tests\Get-ExploitDb.Tests.ps1" executed="True" result="Success" success="True" time="0.6772" asserts="0" description="C:\tools\personal\git\SecurityInfo\tests\Get-ExploitDb.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-ExploitDb" executed="True" result="Success" success="True" time="0.5769" asserts="0" description="Get-ExploitDb">
+            <results>
+              <test-suite type="TestFixture" name="Get-ExploitDb.Basic Functionality" executed="True" result="Success" success="True" time="0.1359" asserts="0" description="Get-ExploitDb.Basic Functionality">
+                <results>
+                  <test-case description="returns exploit data for CVE with multiple exploits" name="Get-ExploitDb.Basic Functionality.returns exploit data for CVE with multiple exploits" time="0.0473" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="returns exploit data for CVE with single exploit" name="Get-ExploitDb.Basic Functionality.returns exploit data for CVE with single exploit" time="0.0296" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles CVE IDs without the CVE- prefix" name="Get-ExploitDb.Basic Functionality.handles CVE IDs without the CVE- prefix" time="0.0283" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="returns nothing when no exploits are found" name="Get-ExploitDb.Basic Functionality.returns nothing when no exploits are found" time="0.0244" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-ExploitDb.Pipeline Input" executed="True" result="Success" success="True" time="0.2373" asserts="0" description="Get-ExploitDb.Pipeline Input">
+                <results>
+                  <test-case description="processes multiple CVE IDs from pipeline" name="Get-ExploitDb.Pipeline Input.processes multiple CVE IDs from pipeline" time="0.0357" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="processes array input directly" name="Get-ExploitDb.Pipeline Input.processes array input directly" time="0.0284" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles mixed CVE formats in pipeline" name="Get-ExploitDb.Pipeline Input.handles mixed CVE formats in pipeline" time="0.0288" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-ExploitDb.Error Handling" executed="True" result="Success" success="True" time="0.3152" asserts="0" description="Get-ExploitDb.Error Handling">
+                <results>
+                  <test-case description="writes an error on API failure" name="Get-ExploitDb.Error Handling.writes an error on API failure" time="0.0334" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="continues processing other CVEs when one fails" name="Get-ExploitDb.Error Handling.continues processing other CVEs when one fails" time="0.0354" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-ExploitDb.Data Type Validation" executed="True" result="Success" success="True" time="0.3913" asserts="0" description="Get-ExploitDb.Data Type Validation">
+                <results>
+                  <test-case description="converts verified field to proper boolean type" name="Get-ExploitDb.Data Type Validation.converts verified field to proper boolean type" time="0.0334" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="returns proper data types for all fields" name="Get-ExploitDb.Data Type Validation.returns proper data types for all fields" time="0.0362" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-ExploitDb.HTTP Headers and Request Validation" executed="True" result="Success" success="True" time="0.4522" asserts="0" description="Get-ExploitDb.HTTP Headers and Request Validation">
+                <results>
+                  <test-case description="calls Invoke-RestMethod with correct headers" name="Get-ExploitDb.HTTP Headers and Request Validation.calls Invoke-RestMethod with correct headers" time="0.0258" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="constructs correct URL for CVE query" name="Get-ExploitDb.HTTP Headers and Request Validation.constructs correct URL for CVE query" time="0.0261" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-ExploitDb.Edge Cases" executed="True" result="Success" success="True" time="0.5365" asserts="0" description="Get-ExploitDb.Edge Cases">
+                <results>
+                  <test-case description="handles exploit data without ID gracefully" name="Get-ExploitDb.Edge Cases.handles exploit data without ID gracefully" time="0.0281" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles empty description array gracefully" name="Get-ExploitDb.Edge Cases.handles empty description array gracefully" time="0.0237" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles null API response gracefully" name="Get-ExploitDb.Edge Cases.handles null API response gracefully" time="0.0262" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-ExploitDb.Verbose Output" executed="True" result="Success" success="True" time="0.5691" asserts="0" description="Get-ExploitDb.Verbose Output">
+                <results>
+                  <test-case description="writes verbose messages when no exploits found" name="Get-ExploitDb.Verbose Output.writes verbose messages when no exploits found" time="0.0264" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\tools\personal\git\SecurityInfo\tests\Get-GitHubSecurityAdvisory.Tests.ps1" executed="True" result="Success" success="True" time="0.7944" asserts="0" description="C:\tools\personal\git\SecurityInfo\tests\Get-GitHubSecurityAdvisory.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-GitHubSecurityAdvisory" executed="True" result="Success" success="True" time="0.6995" asserts="0" description="Get-GitHubSecurityAdvisory">
+            <results>
+              <test-suite type="TestFixture" name="Get-GitHubSecurityAdvisory.Authentication and Setup" executed="True" result="Success" success="True" time="0.0892" asserts="0" description="Get-GitHubSecurityAdvisory.Authentication and Setup">
+                <results>
+                  <test-case description="throws error when GITHUB_PAT is not set" name="Get-GitHubSecurityAdvisory.Authentication and Setup.throws error when GITHUB_PAT is not set" time="0.0265" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="uses custom token when provided" name="Get-GitHubSecurityAdvisory.Authentication and Setup.uses custom token when provided" time="0.0251" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="uses environment variable token by default" name="Get-GitHubSecurityAdvisory.Authentication and Setup.uses environment variable token by default" time="0.0289" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-GitHubSecurityAdvisory.ByCveId Parameter Set" executed="True" result="Success" success="True" time="0.2555" asserts="0" description="Get-GitHubSecurityAdvisory.ByCveId Parameter Set">
+                <results>
+                  <test-case description="returns advisory details for CVE ID" name="Get-GitHubSecurityAdvisory.ByCveId Parameter Set.returns advisory details for CVE ID" time="0.0396" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles CVE IDs without the CVE- prefix" name="Get-GitHubSecurityAdvisory.ByCveId Parameter Set.handles CVE IDs without the CVE- prefix" time="0.0243" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="returns null when no advisory is found" name="Get-GitHubSecurityAdvisory.ByCveId Parameter Set.returns null when no advisory is found" time="0.0256" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="includes CWE information when available" name="Get-GitHubSecurityAdvisory.ByCveId Parameter Set.includes CWE information when available" time="0.0331" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="includes vulnerability information when available" name="Get-GitHubSecurityAdvisory.ByCveId Parameter Set.includes vulnerability information when available" time="0.0351" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-GitHubSecurityAdvisory.ByGhsaId Parameter Set" executed="True" result="Success" success="True" time="0.3463" asserts="0" description="Get-GitHubSecurityAdvisory.ByGhsaId Parameter Set">
+                <results>
+                  <test-case description="returns advisory details for GHSA ID" name="Get-GitHubSecurityAdvisory.ByGhsaId Parameter Set.returns advisory details for GHSA ID" time="0.0319" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles advisory without CWE information" name="Get-GitHubSecurityAdvisory.ByGhsaId Parameter Set.handles advisory without CWE information" time="0.0259" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="returns null when no advisory is found" name="Get-GitHubSecurityAdvisory.ByGhsaId Parameter Set.returns null when no advisory is found" time="0.0255" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-GitHubSecurityAdvisory.GraphQL Query Construction" executed="True" result="Success" success="True" time="0.4277" asserts="0" description="Get-GitHubSecurityAdvisory.GraphQL Query Construction">
+                <results>
+                  <test-case description="sends correct GraphQL query structure" name="Get-GitHubSecurityAdvisory.GraphQL Query Construction.sends correct GraphQL query structure" time="0.0354" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="includes all required fields in GraphQL query" name="Get-GitHubSecurityAdvisory.GraphQL Query Construction.includes all required fields in GraphQL query" time="0.0354" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-GitHubSecurityAdvisory.Error Handling" executed="True" result="Success" success="True" time="0.5045" asserts="0" description="Get-GitHubSecurityAdvisory.Error Handling">
+                <results>
+                  <test-case description="writes an error on API failure" name="Get-GitHubSecurityAdvisory.Error Handling.writes an error on API failure" time="0.0425" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="provides detailed error information" name="Get-GitHubSecurityAdvisory.Error Handling.provides detailed error information" time="0.0266" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-GitHubSecurityAdvisory.Data Type Validation" executed="True" result="Success" success="True" time="0.6311" asserts="0" description="Get-GitHubSecurityAdvisory.Data Type Validation">
+                <results>
+                  <test-case description="returns proper data types for all fields" name="Get-GitHubSecurityAdvisory.Data Type Validation.returns proper data types for all fields" time="0.0485" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="properly structures CWE data when present" name="Get-GitHubSecurityAdvisory.Data Type Validation.properly structures CWE data when present" time="0.0328" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="properly structures vulnerability data when present" name="Get-GitHubSecurityAdvisory.Data Type Validation.properly structures vulnerability data when present" time="0.0388" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-GitHubSecurityAdvisory.Parameter Set Validation" executed="True" result="Success" success="True" time="0.6607" asserts="0" description="Get-GitHubSecurityAdvisory.Parameter Set Validation">
+                <results>
+                  <test-case description="requires exactly one parameter set" name="Get-GitHubSecurityAdvisory.Parameter Set Validation.requires exactly one parameter set" time="0.0205" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-GitHubSecurityAdvisory.Verbose Output" executed="True" result="Success" success="True" time="0.6911" asserts="0" description="Get-GitHubSecurityAdvisory.Verbose Output">
+                <results>
+                  <test-case description="writes verbose messages when no advisory found" name="Get-GitHubSecurityAdvisory.Verbose Output.writes verbose messages when no advisory found" time="0.0242" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\tools\personal\git\SecurityInfo\tests\Get-NvdCve.Tests.ps1" executed="True" result="Success" success="True" time="1.5244" asserts="0" description="C:\tools\personal\git\SecurityInfo\tests\Get-NvdCve.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-NvdCve" executed="True" result="Success" success="True" time="1.4188" asserts="0" description="Get-NvdCve">
+            <results>
+              <test-suite type="TestFixture" name="Get-NvdCve.Parameter Set Validation" executed="True" result="Success" success="True" time="0.3378" asserts="0" description="Get-NvdCve.Parameter Set Validation">
+                <results>
+                  <test-case description="accepts valid keyword parameter" name="Get-NvdCve.Parameter Set Validation.accepts valid keyword parameter" time="0.0564" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="accepts valid days parameter" name="Get-NvdCve.Parameter Set Validation.accepts valid days parameter" time="0.0398" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="accepts valid CVE ID parameter" name="Get-NvdCve.Parameter Set Validation.accepts valid CVE ID parameter" time="0.0382" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="accepts CVE ID without CVE prefix" name="Get-NvdCve.Parameter Set Validation.accepts CVE ID without CVE prefix" time="0.0369" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="throws error for days exceeding 120" name="Get-NvdCve.Parameter Set Validation.throws error for days exceeding 120" time="0.0341" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="accepts valid severity values" name="Get-NvdCve.Parameter Set Validation.accepts valid severity values" time="0.0689" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="accepts valid top values within range" name="Get-NvdCve.Parameter Set Validation.accepts valid top values within range" time="0.0564" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-NvdCve.API Request Construction" executed="True" result="Success" success="True" time="0.5817" asserts="0" description="Get-NvdCve.API Request Construction">
+                <results>
+                  <test-case description="constructs correct URL for keyword search" name="Get-NvdCve.API Request Construction.constructs correct URL for keyword search" time="0.0406" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="constructs correct URL for days search" name="Get-NvdCve.API Request Construction.constructs correct URL for days search" time="0.0443" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="constructs correct URL for CVE ID search" name="Get-NvdCve.API Request Construction.constructs correct URL for CVE ID search" time="0.0391" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="adds CVE prefix when missing" name="Get-NvdCve.API Request Construction.adds CVE prefix when missing" time="0.0279" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="includes severity parameter when specified" name="Get-NvdCve.API Request Construction.includes severity parameter when specified" time="0.0437" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="includes top parameter when specified" name="Get-NvdCve.API Request Construction.includes top parameter when specified" time="0.0414" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-NvdCve.Data Processing and Output" executed="True" result="Success" success="True" time="0.7382" asserts="0" description="Get-NvdCve.Data Processing and Output">
+                <results>
+                  <test-case description="returns CVE data with correct structure" name="Get-NvdCve.Data Processing and Output.returns CVE data with correct structure" time="0.0347" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles CVSS v4.0 metrics correctly" name="Get-NvdCve.Data Processing and Output.handles CVSS v4.0 metrics correctly" time="0.0342" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="processes CWE IDs correctly" name="Get-NvdCve.Data Processing and Output.processes CWE IDs correctly" time="0.0246" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="includes affected software when requested" name="Get-NvdCve.Data Processing and Output.includes affected software when requested" time="0.0294" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="does not include affected software by default" name="Get-NvdCve.Data Processing and Output.does not include affected software by default" time="0.0269" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-NvdCve.Error Handling" executed="True" result="Success" success="True" time="0.8294" asserts="0" description="Get-NvdCve.Error Handling">
+                <results>
+                  <test-case description="handles empty results gracefully" name="Get-NvdCve.Error Handling.handles empty results gracefully" time="0.0286" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles API errors appropriately" name="Get-NvdCve.Error Handling.handles API errors appropriately" time="0.03" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="provides detailed error information" name="Get-NvdCve.Error Handling.provides detailed error information" time="0.0257" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-NvdCve.Data Type Validation" executed="True" result="Success" success="True" time="0.9184" asserts="0" description="Get-NvdCve.Data Type Validation">
+                <results>
+                  <test-case description="returns proper data types for all fields" name="Get-NvdCve.Data Type Validation.returns proper data types for all fields" time="0.0508" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="returns proper data types for affected software fields" name="Get-NvdCve.Data Type Validation.returns proper data types for affected software fields" time="0.0287" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-NvdCve.Parameter Combinations" executed="True" result="Success" success="True" time="1.065" asserts="0" description="Get-NvdCve.Parameter Combinations">
+                <results>
+                  <test-case description="works with keyword and severity combination" name="Get-NvdCve.Parameter Combinations.works with keyword and severity combination" time="0.05" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="works with days and top combination" name="Get-NvdCve.Parameter Combinations.works with days and top combination" time="0.0417" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="works with all optional parameters" name="Get-NvdCve.Parameter Combinations.works with all optional parameters" time="0.0483" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-NvdCve.Edge Cases and Boundary Conditions" executed="True" result="Success" success="True" time="1.2419" asserts="0" description="Get-NvdCve.Edge Cases and Boundary Conditions">
+                <results>
+                  <test-case description="handles minimum days value" name="Get-NvdCve.Edge Cases and Boundary Conditions.handles minimum days value" time="0.0406" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles maximum days value" name="Get-NvdCve.Edge Cases and Boundary Conditions.handles maximum days value" time="0.0383" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles minimum top value" name="Get-NvdCve.Edge Cases and Boundary Conditions.handles minimum top value" time="0.03" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles maximum top value" name="Get-NvdCve.Edge Cases and Boundary Conditions.handles maximum top value" time="0.0264" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles empty keyword with error" name="Get-NvdCve.Edge Cases and Boundary Conditions.handles empty keyword with error" time="0.0104" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles CVE ID with different case" name="Get-NvdCve.Edge Cases and Boundary Conditions.handles CVE ID with different case" time="0.0244" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-NvdCve.Verbose Output" executed="True" result="Success" success="True" time="1.2903" asserts="0" description="Get-NvdCve.Verbose Output">
+                <results>
+                  <test-case description="provides verbose information when requested" name="Get-NvdCve.Verbose Output.provides verbose information when requested" time="0.0397" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-NvdCve.CVSS Version Priority" executed="True" result="Success" success="True" time="1.3984" asserts="0" description="Get-NvdCve.CVSS Version Priority">
+                <results>
+                  <test-case description="prioritizes CVSS v4.0 over v3.1 when both are available" name="Get-NvdCve.CVSS Version Priority.prioritizes CVSS v4.0 over v3.1 when both are available" time="0.0252" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="falls back to CVSS v3.1 when v4.0 is not available" name="Get-NvdCve.CVSS Version Priority.falls back to CVSS v3.1 when v4.0 is not available" time="0.0261" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles missing CVSS data gracefully" name="Get-NvdCve.CVSS Version Priority.handles missing CVSS data gracefully" time="0.0503" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+      <test-suite type="TestFixture" name="C:\tools\personal\git\SecurityInfo\tests\Get-SecurityInfo.Tests.ps1" executed="True" result="Success" success="True" time="2.5269" asserts="0" description="C:\tools\personal\git\SecurityInfo\tests\Get-SecurityInfo.Tests.ps1">
+        <results>
+          <test-suite type="TestFixture" name="Get-SecurityInfo" executed="True" result="Success" success="True" time="2.4209" asserts="0" description="Get-SecurityInfo">
+            <results>
+              <test-suite type="TestFixture" name="Get-SecurityInfo.Basic Functionality" executed="True" result="Success" success="True" time="0.1747" asserts="0" description="Get-SecurityInfo.Basic Functionality">
+                <results>
+                  <test-case description="accepts CVE ID with CVE prefix" name="Get-SecurityInfo.Basic Functionality.accepts CVE ID with CVE prefix" time="0.0318" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="accepts CVE ID without CVE prefix" name="Get-SecurityInfo.Basic Functionality.accepts CVE ID without CVE prefix" time="0.0375" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="accepts multiple CVE IDs" name="Get-SecurityInfo.Basic Functionality.accepts multiple CVE IDs" time="0.0507" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="accepts pipeline input" name="Get-SecurityInfo.Basic Functionality.accepts pipeline input" time="0.0459" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-SecurityInfo.Data Source Integration" executed="True" result="Success" success="True" time="0.2996" asserts="0" description="Get-SecurityInfo.Data Source Integration">
+                <results>
+                  <test-case description="calls all data source functions" name="Get-SecurityInfo.Data Source Integration.calls all data source functions" time="0.0493" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="sets availability flags correctly when data is available" name="Get-SecurityInfo.Data Source Integration.sets availability flags correctly when data is available" time="0.0389" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="sets availability flags correctly when data is not available" name="Get-SecurityInfo.Data Source Integration.sets availability flags correctly when data is not available" time="0.0304" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-SecurityInfo.Data Prioritization" executed="True" result="Success" success="True" time="0.4481" asserts="0" description="Get-SecurityInfo.Data Prioritization">
+                <results>
+                  <test-case description="prioritizes NVD data over CVE.org data when both available" name="Get-SecurityInfo.Data Prioritization.prioritizes NVD data over CVE.org data when both available" time="0.0359" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="uses CVE.org title over NVD description for title field" name="Get-SecurityInfo.Data Prioritization.uses CVE.org title over NVD description for title field" time="0.0277" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="falls back to CVE.org data when NVD data is not available" name="Get-SecurityInfo.Data Prioritization.falls back to CVE.org data when NVD data is not available" time="0.0364" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles N/A values when no data source is available" name="Get-SecurityInfo.Data Prioritization.handles N/A values when no data source is available" time="0.0419" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-SecurityInfo.VulnDetails Parameter" executed="True" result="Success" success="True" time="0.5989" asserts="0" description="Get-SecurityInfo.VulnDetails Parameter">
+                <results>
+                  <test-case description="includes detailed data when vulnDetails switch is used" name="Get-SecurityInfo.VulnDetails Parameter.includes detailed data when vulnDetails switch is used" time="0.0356" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="does not include detailed data by default" name="Get-SecurityInfo.VulnDetails Parameter.does not include detailed data by default" time="0.0324" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="includes only available detailed data sources" name="Get-SecurityInfo.VulnDetails Parameter.includes only available detailed data sources" time="0.0364" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="detailed data contains correct objects" name="Get-SecurityInfo.VulnDetails Parameter.detailed data contains correct objects" time="0.0399" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-SecurityInfo.Error Handling" executed="True" result="Success" success="True" time="0.7298" asserts="0" description="Get-SecurityInfo.Error Handling">
+                <results>
+                  <test-case description="warns and skips CVE when no data source returns information" name="Get-SecurityInfo.Error Handling.warns and skips CVE when no data source returns information" time="0.032" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="continues processing other CVEs when one fails" name="Get-SecurityInfo.Error Handling.continues processing other CVEs when one fails" time="0.0613" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles individual function errors gracefully" name="Get-SecurityInfo.Error Handling.handles individual function errors gracefully" time="0.0312" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-SecurityInfo.Data Type Validation" executed="True" result="Success" success="True" time="0.874" asserts="0" description="Get-SecurityInfo.Data Type Validation">
+                <results>
+                  <test-case description="returns proper data types for all summary fields" name="Get-SecurityInfo.Data Type Validation.returns proper data types for all summary fields" time="0.0478" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="returns proper data types for availability flags" name="Get-SecurityInfo.Data Type Validation.returns proper data types for availability flags" time="0.04" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="returns proper data types for detailed objects" name="Get-SecurityInfo.Data Type Validation.returns proper data types for detailed objects" time="0.0499" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-SecurityInfo.Performance and Efficiency" executed="True" result="Success" success="True" time="1.0122" asserts="0" description="Get-SecurityInfo.Performance and Efficiency">
+                <results>
+                  <test-case description="makes exactly one call to each data source function per CVE" name="Get-SecurityInfo.Performance and Efficiency.makes exactly one call to each data source function per CVE" time="0.0556" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="processes multiple CVEs efficiently" name="Get-SecurityInfo.Performance and Efficiency.processes multiple CVEs efficiently" time="0.0763" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-SecurityInfo.CVE ID Normalization" executed="True" result="Success" success="True" time="1.146" asserts="0" description="Get-SecurityInfo.CVE ID Normalization">
+                <results>
+                  <test-case description="normalizes CVE ID with different cases" name="Get-SecurityInfo.CVE ID Normalization.normalizes CVE ID with different cases" time="0.0295" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="normalizes CVE ID without prefix" name="Get-SecurityInfo.CVE ID Normalization.normalizes CVE ID without prefix" time="0.0279" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles mixed CVE ID formats in array" name="Get-SecurityInfo.CVE ID Normalization.handles mixed CVE ID formats in array" time="0.0698" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-SecurityInfo.Output Structure Validation" executed="True" result="Success" success="True" time="1.2539" asserts="0" description="Get-SecurityInfo.Output Structure Validation">
+                <results>
+                  <test-case description="contains all required summary fields" name="Get-SecurityInfo.Output Structure Validation.contains all required summary fields" time="0.042" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="maintains field order in output" name="Get-SecurityInfo.Output Structure Validation.maintains field order in output" time="0.0306" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="returns PSCustomObject type" name="Get-SecurityInfo.Output Structure Validation.returns PSCustomObject type" time="0.0285" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+              <test-suite type="TestFixture" name="Get-SecurityInfo.Edge Cases" executed="True" result="Success" success="True" time="2.336" asserts="0" description="Get-SecurityInfo.Edge Cases">
+                <results>
+                  <test-case description="handles empty CVE ID array" name="Get-SecurityInfo.Edge Cases.handles empty CVE ID array" time="0.0082" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles null CVE ID gracefully" name="Get-SecurityInfo.Edge Cases.handles null CVE ID gracefully" time="0.0097" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles very long CVE ID list" name="Get-SecurityInfo.Edge Cases.handles very long CVE ID list" time="1.0043" asserts="0" success="True" result="Success" executed="True" />
+                  <test-case description="handles duplicate CVE IDs" name="Get-SecurityInfo.Edge Cases.handles duplicate CVE IDs" time="0.0529" asserts="0" success="True" result="Success" executed="True" />
+                </results>
+              </test-suite>
+            </results>
+          </test-suite>
+        </results>
+      </test-suite>
+    </results>
+  </test-suite>
+</test-results>
