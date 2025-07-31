@@ -11,31 +11,32 @@ jobs:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
-                os: [windows-latest, ubuntu-latest, macos-latest]
-                powershell-version: ['5.1', '7.x']
-                exclude:
-                    # PowerShell 5.1 is Windows only
+                include:
+                    - os: windows-latest
+                      shell: powershell
+                      powershell-version: '5.1'
+                    - os: windows-latest  
+                      shell: pwsh
+                      powershell-version: '7.x'
                     - os: ubuntu-latest
-                      powershell-version: '5.1'
+                      shell: pwsh
+                      powershell-version: '7.x'
                     - os: macos-latest
-                      powershell-version: '5.1'
+                      shell: pwsh
+                      powershell-version: '7.x'
 
         steps:
             - uses: actions/checkout@v4
 
-            - name: Setup PowerShell
-              uses: actions/setup-powershell@v1
-              if: matrix.powershell-version == '7.x'
-
             - name: Install Pester
-              shell: pwsh
+              shell: ${{ matrix.shell }}
               run: |
                   if (-not (Get-Module -ListAvailable -Name Pester)) {
                     Install-Module -Name Pester -Force -Scope CurrentUser -SkipPublisherCheck
                   }
 
             - name: Run Tests
-              shell: pwsh
+              shell: ${{ matrix.shell }}
               run: |
                   $testResults = Invoke-Pester -Path "tests/" -OutputFormat NUnitXml -OutputFile "TestResults.xml" -PassThru
                   if ($testResults.FailedCount -gt 0) {
@@ -56,9 +57,6 @@ jobs:
 
         steps:
             - uses: actions/checkout@v4
-
-            - name: Setup PowerShell
-              uses: actions/setup-powershell@v1
 
             - name: Publish to PowerShell Gallery
               shell: pwsh
