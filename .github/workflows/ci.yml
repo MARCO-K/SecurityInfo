@@ -43,7 +43,13 @@ jobs:
               if: matrix.powershell-version == '5.1'
               shell: powershell
               run: |
-                  $testResults = Invoke-Pester -Path "tests/" -OutputFormat NUnitXml -OutputFile "TestResults.xml" -PassThru
+                  $config = New-PesterConfiguration
+                  $config.Run.Path = "tests/"
+                  $config.TestResult.Enabled = $true
+                  $config.TestResult.OutputFormat = "NUnitXml"
+                  $config.TestResult.OutputPath = "TestResults.xml"
+                  $config.Output.Verbosity = "Detailed"
+                  $testResults = Invoke-Pester -Configuration $config
                   if ($testResults.FailedCount -gt 0) {
                     throw "Tests failed: $($testResults.FailedCount) failed out of $($testResults.TotalCount)"
                   }
@@ -52,7 +58,13 @@ jobs:
               if: matrix.powershell-version == '7.x'
               shell: pwsh
               run: |
-                  $testResults = Invoke-Pester -Path "tests/" -OutputFormat NUnitXml -OutputFile "TestResults.xml" -PassThru
+                  $config = New-PesterConfiguration
+                  $config.Run.Path = "tests/"
+                  $config.TestResult.Enabled = $true
+                  $config.TestResult.OutputFormat = "NUnitXml"
+                  $config.TestResult.OutputPath = "TestResults.xml"
+                  $config.Output.Verbosity = "Detailed"
+                  $testResults = Invoke-Pester -Configuration $config
                   if ($testResults.FailedCount -gt 0) {
                     throw "Tests failed: $($testResults.FailedCount) failed out of $($testResults.TotalCount)"
                   }
