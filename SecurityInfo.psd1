@@ -44,20 +44,23 @@
     # Aliases to export from this module
     AliasesToExport      = @()
 
-    # Tags for this module (used for discovery in PowerShell Gallery)
-    Tags                 = @('Security', 'CVE', 'Vulnerability', 'NVD', 'CISA', 'EPSS', 'ExploitDB', 'InfoSec', 'ThreatIntel')
+    # Private data to pass to the module specified in RootModule
+    PrivateData          = @{
+        PSData = @{
+            # Tags for this module (used for discovery in PowerShell Gallery)
+            Tags                 = @('Security', 'CVE', 'Vulnerability', 'NVD', 'CISA', 'EPSS', 'ExploitDB', 'InfoSec', 'ThreatIntel')
 
-    # License URI for this module
-    LicenseUri           = 'https://github.com/MARCO-K/SecurityInfo/blob/main/LICENSE'
+            # License URI for this module
+            LicenseUri           = 'https://github.com/MARCO-K/SecurityInfo/blob/main/LICENSE'
 
-    # Project URI for this module
-    ProjectUri           = 'https://github.com/MARCO-K/SecurityInfo'
+            # Project URI for this module
+            ProjectUri           = 'https://github.com/MARCO-K/SecurityInfo'
 
-    # Icon URI for this module
-    # IconUri              = 'https://github.com/MARCO-K/SecurityInfo/raw/main/assets/icon.png'
+            # Icon URI for this module
+            # IconUri              = 'https://github.com/MARCO-K/SecurityInfo/raw/main/assets/icon.png'
 
-    # Release notes for this module
-    ReleaseNotes         = @'
+            # Release notes for this module
+            ReleaseNotes         = @'
 ## 1.0.0 - Initial Release
 - Comprehensive vulnerability intelligence aggregation
 - Support for 7 major security data sources
@@ -66,9 +69,6 @@
 - Enterprise-ready error handling and logging
 '@
 
-    # Private data to pass to the module specified in RootModule
-    PrivateData          = @{
-        PSData = @{
             # Additional metadata for PowerShell Gallery
             Prerelease   = ''
             RequireLicenseAcceptance = $false
