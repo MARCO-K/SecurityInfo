@@ -1,4 +1,5 @@
 # Tests for Get-CisaKev function
+
 # Import the function to be tested
 . "$PSScriptRoot/../functions/Get-CisaKev.ps1"
 
@@ -74,7 +75,7 @@ Describe 'Get-CisaKev' {
                 return $mockVulnDetailsCritical
             }
             if ($Uri -like '*vulnerabilities/id/CVE-9999-9999*') {
-                 # Simulate a "not found" error from the API
+                # Simulate a "not found" error from the API
                 $errorRecord = [System.Management.Automation.ErrorRecord]::new(
                     (New-Object System.Exception "The remote server returned an error: (404) Not Found."),
                     'KEVinApiNotFound',
