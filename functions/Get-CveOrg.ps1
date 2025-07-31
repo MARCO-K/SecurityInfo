@@ -79,7 +79,7 @@ function Get-CveOrg {
             }
 
             # Format the output object
-            [pscustomobject]@{
+            $outputObject = [pscustomobject]@{
                 CVEID            = $response.cveMetadata.cveId
                 Title            = $title
                 State            = $response.cveMetadata.state
@@ -88,10 +88,22 @@ function Get-CveOrg {
                 DateUpdated      = $response.cveMetadata.dateUpdated
                 Description      = $description
                 AffectedProducts = $affectedProducts
-                BaseScore        = $cnaContainer.metrics.cvssV3_1.baseScore
-                BaseSeverity     = $cnaContainer.metrics.cvssV3_1.baseSeverity
+                BaseScore        = $null # Initialize
+                BaseSeverity     = $null # Initialize
                 References       = $cnaContainer.references
             }
+
+            # Safely extract metrics
+            if ($cnaContainer.metrics) {
+                # Find the first metric object that has a cvssV3_1 property
+                $metric = $cnaContainer.metrics | Where-Object { $_.cvssV3_1 } | Select-Object -First 1
+                if ($metric) {
+                    $outputObject.BaseScore = $metric.cvssV3_1.baseScore
+                    $outputObject.BaseSeverity = $metric.cvssV3_1.baseSeverity
+                }
+            }
+
+            $outputObject # Return the object
         }
         catch [Microsoft.PowerShell.Commands.HttpResponseException] {
             if ($_.Exception.Response.StatusCode -eq 'NotFound') {
