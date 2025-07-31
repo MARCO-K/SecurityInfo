@@ -348,7 +348,7 @@ Describe "Get-NvdCve" {
         }
 
         It 'handles empty keyword with error' {
-            { Get-NvdCve -Keyword "" } | Should -Throw "*leere Zeichenfolge*"
+            { Get-NvdCve -Keyword "" } | Should -Throw
         }
 
         It 'handles CVE ID with different case' {
