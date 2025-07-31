@@ -4,6 +4,8 @@
 
 SecurityInfo is a PowerShell module that provides functions to query and analyze security vulnerability data from public sources such as CVE.org, NVD, CISA KEV, Exploit-DB, and FIRST EPSS. It helps security professionals and researchers automate the retrieval and filtering of vulnerability information for threat intelligence, patch management, and reporting.
 
+![PSScriptAnalyzer](https://github.com/MARCO-K/SecurityInfo/actions/workflows/powershell.yml/badge.svg)
+
 ## Features
 
 - Query CVEs from CVE.org API
