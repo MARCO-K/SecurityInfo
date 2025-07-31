@@ -98,6 +98,12 @@ Get-SecurityInfo -CveId "2023-12345" -vulnDetails
 
 The summary view includes fields like Title, Status, Severity, and boolean flags (e.g., IsNvdAvailable, IsCisaKevAvailable, IsGitHubAvailable) to quickly see which sources have data. Use `-vulnDetails` to include full nested objects from each source (NVD_Data, CveOrg_Data, CisaKev_Data, Epss_Data, ExploitDb_Data, Euvd_Data, GitHub_Data).
 
+## Contributing
+
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) to get started.
+
+Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
+
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
