@@ -1,13 +1,8 @@
 Describe "Get-SecurityInfo" {
     BeforeAll {
-        # Load all the individual functions first so they can be mocked
-        . "$PSScriptRoot/../functions/Get-NvdCve.ps1"
-        . "$PSScriptRoot/../functions/Get-CveOrg.ps1"
-        . "$PSScriptRoot/../functions/Get-CisaKev.ps1"
-        . "$PSScriptRoot/../functions/Get-EpssScore.ps1"
-        . "$PSScriptRoot/../functions/Get-ExploitDb.ps1"
-        . "$PSScriptRoot/../functions/Get-Euvd.ps1"
-        . "$PSScriptRoot/../functions/Get-GitHubSecurityAdvisory.ps1"
+        # Import the entire module to ensure all functions are loaded correctly.
+        # This is more robust than dot-sourcing individual files, especially in CI environments.
+        Import-Module "$PSScriptRoot/../SecurityInfo.psd1" -Force
 
         # Mock data for individual functions - these will be returned by mocked functions
         $script:mockNvdData = [PSCustomObject]@{
@@ -84,7 +79,7 @@ Describe "Get-SecurityInfo" {
         }
 
         # Mock all the individual functions
-        Mock -CommandName Get-NvdCve -MockWith {
+        Mock -ModuleName SecurityInfo -CommandName Get-NvdCve -MockWith {
             param($CveId)
             if ($CveId -eq "CVE-2023-12345") { return $script:mockNvdData }
             elseif ($CveId -eq "CVE-9999-9999") { return $null }
@@ -92,7 +87,7 @@ Describe "Get-SecurityInfo" {
             else { return $script:mockNvdData }
         }
 
-        Mock -CommandName Get-CveOrg -MockWith {
+        Mock -ModuleName SecurityInfo -CommandName Get-CveOrg -MockWith {
             param($CveId)
             if ($CveId -eq "CVE-2023-12345") { return $script:mockCveOrgData }
             elseif ($CveId -eq "CVE-9999-9999") { return $null }
@@ -100,37 +95,36 @@ Describe "Get-SecurityInfo" {
             else { return $script:mockCveOrgData }
         }
 
-        Mock -CommandName Get-CisaKev -MockWith {
+        Mock -ModuleName SecurityInfo -CommandName Get-CisaKev -MockWith {
             param($CveId)
             if ($CveId -eq "CVE-2023-12345") { return $script:mockCisaData }
             else { return $null }
         }
 
-        Mock -CommandName Get-EpssScore -MockWith {
+        Mock -ModuleName SecurityInfo -CommandName Get-EpssScore -MockWith {
             param($CveId)
             if ($CveId -eq "CVE-2023-12345") { return $script:mockEpssData }
             else { return $null }
         }
 
-        Mock -CommandName Get-ExploitDb -MockWith {
+        Mock -ModuleName SecurityInfo -CommandName Get-ExploitDb -MockWith {
             param($CveId)
             if ($CveId -eq "CVE-2023-12345") { return $script:mockExploitDbData }
             else { return $null }
         }
 
-        Mock -CommandName Get-Euvd -MockWith {
+        Mock -ModuleName SecurityInfo -CommandName Get-Euvd -MockWith {
             param($CveId)
             if ($CveId -eq "CVE-2023-12345") { return $script:mockEuvdData }
             else { return $null }
         }
 
-        Mock -CommandName Get-GitHubSecurityAdvisory -MockWith {
+        Mock -ModuleName SecurityInfo -CommandName Get-GitHubSecurityAdvisory -MockWith {
             param($CveId)
             if ($CveId -eq "CVE-2023-12345") { return $script:mockGitHubData }
             else { return $null }
         }
 
-        . "$PSScriptRoot/../functions/Get-SecurityInfo.ps1"
     }
 
     Context 'Basic Functionality' {
@@ -165,13 +159,13 @@ Describe "Get-SecurityInfo" {
         It 'calls all data source functions' {
             Get-SecurityInfo -CveId "CVE-2023-12345"
 
-            Assert-MockCalled -CommandName Get-NvdCve -Times 1 -ParameterFilter { $CveId -eq "CVE-2023-12345" }
-            Assert-MockCalled -CommandName Get-CveOrg -Times 1 -ParameterFilter { $CveId -eq "CVE-2023-12345" }
-            Assert-MockCalled -CommandName Get-CisaKev -Times 1 -ParameterFilter { $CveId -eq "CVE-2023-12345" }
-            Assert-MockCalled -CommandName Get-EpssScore -Times 1 -ParameterFilter { $CveId -eq "CVE-2023-12345" }
-            Assert-MockCalled -CommandName Get-ExploitDb -Times 1 -ParameterFilter { $CveId -eq "CVE-2023-12345" }
-            Assert-MockCalled -CommandName Get-Euvd -Times 1 -ParameterFilter { $CveId -eq "CVE-2023-12345" }
-            Assert-MockCalled -CommandName Get-GitHubSecurityAdvisory -Times 1 -ParameterFilter { $CveId -eq "CVE-2023-12345" }
+            Assert-MockCalled -ModuleName SecurityInfo -CommandName Get-NvdCve -Times 1 -ParameterFilter { $CveId -eq "CVE-2023-12345" }
+            Assert-MockCalled -ModuleName SecurityInfo -CommandName Get-CveOrg -Times 1 -ParameterFilter { $CveId -eq "CVE-2023-12345" }
+            Assert-MockCalled -ModuleName SecurityInfo -CommandName Get-CisaKev -Times 1 -ParameterFilter { $CveId -eq "CVE-2023-12345" }
+            Assert-MockCalled -ModuleName SecurityInfo -CommandName Get-EpssScore -Times 1 -ParameterFilter { $CveId -eq "CVE-2023-12345" }
+            Assert-MockCalled -ModuleName SecurityInfo -CommandName Get-ExploitDb -Times 1 -ParameterFilter { $CveId -eq "CVE-2023-12345" }
+            Assert-MockCalled -ModuleName SecurityInfo -CommandName Get-Euvd -Times 1 -ParameterFilter { $CveId -eq "CVE-2023-12345" }
+            Assert-MockCalled -ModuleName SecurityInfo -CommandName Get-GitHubSecurityAdvisory -Times 1 -ParameterFilter { $CveId -eq "CVE-2023-12345" }
         }
 
         It 'sets availability flags correctly when data is available' {
@@ -219,7 +213,7 @@ Describe "Get-SecurityInfo" {
 
         It 'falls back to CVE.org data when NVD data is not available' {
             # Mock scenario where NVD returns null but CVE.org has data
-            Mock -CommandName Get-NvdCve -MockWith { return $null }
+            Mock -ModuleName SecurityInfo -CommandName Get-NvdCve -MockWith { return $null }
 
             $result = Get-SecurityInfo -CveId "CVE-2023-12345"
 
@@ -235,8 +229,8 @@ Describe "Get-SecurityInfo" {
         It 'handles N/A values when no data source is available' {
             # Mock all functions to return null - but this will cause the function to skip the CVE
             # So we need to test a different scenario where at least one source returns data
-            Mock -CommandName Get-NvdCve -MockWith { return $null }
-            Mock -CommandName Get-CveOrg -MockWith {
+            Mock -ModuleName SecurityInfo -CommandName Get-NvdCve -MockWith { return $null }
+            Mock -ModuleName SecurityInfo -CommandName Get-CveOrg -MockWith {
                 return [PSCustomObject]@{
                     CveId         = "CVE-9999-9999"
                     Title         = "Test CVE"
@@ -289,8 +283,8 @@ Describe "Get-SecurityInfo" {
 
         It 'includes only available detailed data sources' {
             # Mock scenario where only some data sources return data
-            Mock -CommandName Get-CisaKev -MockWith { return $null }
-            Mock -CommandName Get-ExploitDb -MockWith { return $null }
+            Mock -ModuleName SecurityInfo -CommandName Get-CisaKev -MockWith { return $null }
+            Mock -ModuleName SecurityInfo -CommandName Get-ExploitDb -MockWith { return $null }
 
             $result = Get-SecurityInfo -CveId "CVE-2023-12345" -vulnDetails
 
@@ -328,31 +322,31 @@ Describe "Get-SecurityInfo" {
 
         It 'continues processing other CVEs when one fails' {
             # Mock all functions to return null for CVE-5000-5000 but data for CVE-2023-12345
-            Mock Get-CveOrg {
+            Mock -ModuleName SecurityInfo Get-CveOrg {
                 if ($CveId -eq "CVE-5000-5000") { return $null }
                 else { return $script:mockCveOrgData }
             }
-            Mock Get-NvdCve {
+            Mock -ModuleName SecurityInfo Get-NvdCve {
                 if ($CveId -eq "CVE-5000-5000") { return $null }
                 else { return $script:mockNvdData }
             }
-            Mock Get-CisaKev {
+            Mock -ModuleName SecurityInfo Get-CisaKev {
                 if ($CveId -eq "CVE-5000-5000") { return $null }
                 else { return $script:mockCisaData }
             }
-            Mock Get-EpssScore {
+            Mock -ModuleName SecurityInfo Get-EpssScore {
                 if ($CveId -eq "CVE-5000-5000") { return $null }
                 else { return $script:mockEpssData }
             }
-            Mock Get-ExploitDb {
+            Mock -ModuleName SecurityInfo Get-ExploitDb {
                 if ($CveId -eq "CVE-5000-5000") { return $null }
                 else { return $script:mockExploitDbData }
             }
-            Mock Get-EUvd {
+            Mock -ModuleName SecurityInfo Get-EUvd {
                 if ($CveId -eq "CVE-5000-5000") { return $null }
                 else { return $script:mockEuvdData }
             }
-            Mock Get-GitHubSecurityAdvisory {
+            Mock -ModuleName SecurityInfo Get-GitHubSecurityAdvisory {
                 if ($CveId -eq "CVE-5000-5000") { return $null }
                 else { return $script:mockGitHubData }
             }
@@ -376,7 +370,7 @@ Describe "Get-SecurityInfo" {
 
         It 'handles individual function errors gracefully' {
             # Mock one function to return null, but others still have data
-            Mock -CommandName Get-NvdCve -MockWith { return $null }
+            Mock -ModuleName SecurityInfo -CommandName Get-NvdCve -MockWith { return $null }
 
             # The function still returns data from other sources
             $result = Get-SecurityInfo -CveId "CVE-2023-12345"
@@ -430,25 +424,25 @@ Describe "Get-SecurityInfo" {
         It 'makes exactly one call to each data source function per CVE' {
             Get-SecurityInfo -CveId "CVE-2023-12345"
 
-            Assert-MockCalled -CommandName Get-NvdCve -Exactly 1
-            Assert-MockCalled -CommandName Get-CveOrg -Exactly 1
-            Assert-MockCalled -CommandName Get-CisaKev -Exactly 1
-            Assert-MockCalled -CommandName Get-EpssScore -Exactly 1
-            Assert-MockCalled -CommandName Get-ExploitDb -Exactly 1
-            Assert-MockCalled -CommandName Get-Euvd -Exactly 1
-            Assert-MockCalled -CommandName Get-GitHubSecurityAdvisory -Exactly 1
+            Assert-MockCalled -ModuleName SecurityInfo -CommandName Get-NvdCve -Exactly 1
+            Assert-MockCalled -ModuleName SecurityInfo -CommandName Get-CveOrg -Exactly 1
+            Assert-MockCalled -ModuleName SecurityInfo -CommandName Get-CisaKev -Exactly 1
+            Assert-MockCalled -ModuleName SecurityInfo -CommandName Get-EpssScore -Exactly 1
+            Assert-MockCalled -ModuleName SecurityInfo -CommandName Get-ExploitDb -Exactly 1
+            Assert-MockCalled -ModuleName SecurityInfo -CommandName Get-Euvd -Exactly 1
+            Assert-MockCalled -ModuleName SecurityInfo -CommandName Get-GitHubSecurityAdvisory -Exactly 1
         }
 
         It 'processes multiple CVEs efficiently' {
             Get-SecurityInfo -CveId @("CVE-2023-12345", "CVE-2024-67890")
 
-            Assert-MockCalled -CommandName Get-NvdCve -Exactly 2
-            Assert-MockCalled -CommandName Get-CveOrg -Exactly 2
-            Assert-MockCalled -CommandName Get-CisaKev -Exactly 2
-            Assert-MockCalled -CommandName Get-EpssScore -Exactly 2
-            Assert-MockCalled -CommandName Get-ExploitDb -Exactly 2
-            Assert-MockCalled -CommandName Get-Euvd -Exactly 2
-            Assert-MockCalled -CommandName Get-GitHubSecurityAdvisory -Exactly 2
+            Assert-MockCalled -ModuleName SecurityInfo -CommandName Get-NvdCve -Exactly 2
+            Assert-MockCalled -ModuleName SecurityInfo -CommandName Get-CveOrg -Exactly 2
+            Assert-MockCalled -ModuleName SecurityInfo -CommandName Get-CisaKev -Exactly 2
+            Assert-MockCalled -ModuleName SecurityInfo -CommandName Get-EpssScore -Exactly 2
+            Assert-MockCalled -ModuleName SecurityInfo -CommandName Get-ExploitDb -Exactly 2
+            Assert-MockCalled -ModuleName SecurityInfo -CommandName Get-Euvd -Exactly 2
+            Assert-MockCalled -ModuleName SecurityInfo -CommandName Get-GitHubSecurityAdvisory -Exactly 2
         }
     }
 

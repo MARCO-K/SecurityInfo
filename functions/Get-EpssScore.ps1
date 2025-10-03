@@ -145,8 +145,7 @@ function Get-EpssScore {
             }
         }
         catch {
-            Write-Error "An error occurred while querying the EPSS API: $_"
-            return $null
+            throw "An error occurred while querying the EPSS API: $_"
         }
     }
 }

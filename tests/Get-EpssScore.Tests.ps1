@@ -121,10 +121,8 @@ Describe 'Get-EpssScore' {
     }
 
     Context 'Error Handling' {
-        It 'writes an error on API failure' {
-            $errors = & { Get-EpssScore -CveId "CVE-5000-5000" } 2>&1
-            $messages = $errors | ForEach-Object { $_.ToString() }  
-            $messages | Should -Match "An error occurred while querying the EPSS API.*Simulated API Error"
+        It 'throws an error on API failure' {
+            { Get-EpssScore -CveId "CVE-5000-5000" } | Should -Throw "An error occurred while querying the EPSS API: Simulated API Error"
         }
     }
 
