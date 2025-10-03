@@ -1,50 +1,58 @@
 <#
 .SYNOPSIS
-    Retrieves vulnerability information from the CISA KEV (Known Exploited Vulnerabilities) API.
+    Retrieves data from the CISA Known Exploited Vulnerabilities (KEV) catalog.
 
 .DESCRIPTION
-    This function queries the CISA KEV API for vulnerabilities using a CVE ID, keyword, or recent days.
-    Results include details such as CVE ID, vendor, product, vulnerability name, date added, description, required action, due date, notes, ransomware status, and KEV inclusion date.
-    Optionally, results can be filtered by CVSS severity.
+    This function queries the CISA KEV catalog to determine if a vulnerability is known to be actively exploited in the wild.
+    This is a critical data source for prioritizing remediation efforts. The function can query by a specific CVE ID, a general keyword, or for vulnerabilities added within a recent number of days.
 
 .PARAMETER CveId
-    The CVE ID (e.g., "2023-12345") to retrieve vulnerability details.
+    The CVE ID (e.g., "2023-12345" or "CVE-2023-12345") to check against the KEV catalog.
 
 .PARAMETER Keyword
-    A keyword to search for vulnerabilities in the CISA KEV database.
+    A keyword to search for in the KEV database. This can be a product name, vendor, or any other term.
 
 .PARAMETER Days
-    The number of recent days to retrieve vulnerabilities added to the CISA KEV list.
+    The number of recent days to retrieve vulnerabilities that were added to the KEV list.
 
 .PARAMETER Severity
-    Filter results by CVSS v3 severity: LOW, MEDIUM, HIGH, or CRITICAL.
+    An optional parameter to filter the results by CVSS v3 severity. Accepted values are LOW, MEDIUM, HIGH, CRITICAL.
+    Note: This requires an additional API call per vulnerability and may slow down the query.
 
 .EXAMPLE
     Get-CisaKev -CveId "2023-12345"
-    # Retrieves details for CVE-2023-12345 from the CISA KEV API.
+    # Retrieves the KEV entry for CVE-2023-12345, if it exists.
 
 .EXAMPLE
     Get-CisaKev -Keyword "Exchange"
-    # Searches for vulnerabilities related to "Exchange" in the CISA KEV database.
+    # Searches for all KEV entries related to "Exchange".
 
 .EXAMPLE
     Get-CisaKev -Days 7
-    # Retrieves vulnerabilities added to the CISA KEV list in the last 7 days.
+    # Retrieves all vulnerabilities added to the KEV catalog in the last 7 days.
 
 .EXAMPLE
     Get-CisaKev -Days 30 -Severity "CRITICAL"
-    # Retrieves CRITICAL vulnerabilities added in the last 30 days.
+    # Retrieves CRITICAL vulnerabilities added to the KEV list in the last 30 days.
 
 .OUTPUTS
-    [pscustomobject] containing vulnerability details for each matching entry.
+    [pscustomobject]
+    Returns a custom object for each matching KEV entry with properties such as:
+    - cveID
+    - vendorProject, product, vulnerabilityName
+    - dateAdded, dueDate
+    - shortDescription, requiredAction
+    - isRansomware
 
 .LINK
     https://www.cisa.gov/known-exploited-vulnerabilities-catalog
+    https://kevin.gtfkd.com/api/v1/docs
 
 .NOTES
     Author: Marco Kleinert
     Date: July 2025
-    The function uses the public KEVin API and may be subject to availability or rate limits.
+    This function uses the community-maintained KEVin API, which is a wrapper around the official CISA KEV data.
+    The API may be subject to availability or rate limits.
 #>
 function Get-CisaKev {
     [CmdletBinding(DefaultParameterSetName = 'ByCveId')]

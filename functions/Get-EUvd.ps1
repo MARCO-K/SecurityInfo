@@ -1,19 +1,31 @@
 <#
 .SYNOPSIS
-    Retrieves vulnerability information from the ENISA EU Vulnerability Database (EUVD) by ENISA ID or keyword.
+    Retrieves vulnerability information from the ENISA EU Vulnerability Database (EUVD) by CVE ID, EUVD ID, or keyword.
 
 .DESCRIPTION
-    This function queries the ENISA EUVD API for vulnerability details using either an ENISA ID or a keyword. It returns information such as CVE ID, description, publication date, last modified date, severity, CVSS score, vector, and vendor.
+    This function queries the ENISA EUVD API to find vulnerability details. It can search using three distinct methods:
+    1. By the vulnerability's official CVE ID.
+    2. By its unique ENISA EUVD ID (e.g., "EUVD-2024-12345").
+    3. By a general keyword search across the database.
+
+    The function returns key details such as the EUVD ID, description, publication and modification dates, CVSS score and vector, and vendor information.
 
 .PARAMETER CveId
-    The ENISA ID (e.g., "2023-12345") to retrieve vulnerability details for. The function will prepend 'EUVD-' if not present.
+    The CVE ID (e.g., "2023-12345" or "CVE-2023-12345") to look up in the EUVD.
+
+.PARAMETER EuvdId
+    The unique ENISA ID (e.g., "EUVD-2024-12345") to retrieve. The function will prepend 'EUVD-' if it is not already present.
 
 .PARAMETER Keyword
     A keyword to search for vulnerabilities in the ENISA EUVD database.
 
 .EXAMPLE
     Get-Euvd -CveId "2023-12345"
-    # Retrieves vulnerability details for ENISA ID 2023-12345.
+    # Retrieves vulnerability details by its CVE ID.
+
+.EXAMPLE
+    Get-Euvd -EuvdId "EUVD-2024-0123"
+    # Retrieves vulnerability details for the specific ENISA EUVD ID.
 
 .EXAMPLE
     Get-Euvd -Keyword "openssl"
@@ -24,6 +36,7 @@
 
 .LINK
     https://euvd.enisa.europa.eu/
+    https://euvdservices.enisa.europa.eu/api/docs
 
 .NOTES
     Author: Marco Kleinert

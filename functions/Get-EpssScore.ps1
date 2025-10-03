@@ -1,52 +1,60 @@
 <#
 .SYNOPSIS
-    Retrieves Exploit Prediction Scoring System (EPSS) scores for CVEs from the FIRST EPSS API.
+    Retrieves Exploit Prediction Scoring System (EPSS) scores from the FIRST.org API.
 
 .DESCRIPTION
-    This function queries the FIRST EPSS API for vulnerability exploitability scores.
-    You can retrieve scores by CVE ID, by recent days, or filter by EPSS score and percentile thresholds.
-    Results include CVE ID, EPSS score, percentile, and date.
+    This function queries the official FIRST.org API for EPSS scores, which represent the probability of a vulnerability being exploited in the wild within the next 30 days.
+    The function provides multiple ways to query the data: by one or more CVE IDs, by the number of recent days, or by filtering based on EPSS and percentile score thresholds.
 
 .PARAMETER CveId
-    One or more CVE IDs (e.g., "2023-12345") to retrieve EPSS scores for.
+    An array of one or more CVE IDs (e.g., "2023-12345") to retrieve EPSS scores for. The 'CVE-' prefix is optional.
 
 .PARAMETER Days
-    The number of recent days to retrieve EPSS scores for.
+    The number of recent days to retrieve EPSS scores for. This returns all CVEs with scores updated in that timeframe.
 
 .PARAMETER EpssGreaterThan
-    Filter results to only include vulnerabilities with an EPSS score greater than this value.
+    Filters results to only include vulnerabilities with an EPSS score greater than this value (e.g., 0.5 for 50%).
 
 .PARAMETER EpssLessThan
-    Filter results to only include vulnerabilities with an EPSS score less than this value.
+    Filters results to only include vulnerabilities with an EPSS score less than this value.
 
 .PARAMETER PercentileGreaterThan
-    Filter results to only include vulnerabilities with a percentile greater than this value.
+    Filters results to only include vulnerabilities with a percentile rank greater than this value (e.g., 0.9 for 90th percentile).
 
 .PARAMETER PercentileLessThan
-    Filter results to only include vulnerabilities with a percentile less than this value.
+    Filters results to only include vulnerabilities with a percentile rank less than this value.
 
 .EXAMPLE
-    Get-EpssScore -CveId "2023-12345","2022-5678"
-    # Retrieves EPSS scores for the specified CVEs.
+    Get-EpssScore -CveId "2023-12345", "2022-5678"
+    # Retrieves EPSS scores for the two specified CVEs.
 
 .EXAMPLE
     Get-EpssScore -Days 7
-    # Retrieves EPSS scores for vulnerabilities from the last 7 days.
+    # Retrieves EPSS scores for all vulnerabilities scored in the last 7 days.
 
 .EXAMPLE
-    Get-EpssScore -EpssGreaterThan 0.5 -PercentileLessThan 0.9
-    # Retrieves vulnerabilities with EPSS score > 0.5 and percentile < 0.9.
+    Get-EpssScore -EpssGreaterThan 0.8
+    # Retrieves all vulnerabilities with an EPSS score greater than 80%.
+
+.EXAMPLE
+    Get-EpssScore -PercentileGreaterThan 0.95
+    # Retrieves vulnerabilities that are in the top 5% of all scored vulnerabilities (95th percentile or higher).
 
 .OUTPUTS
-    [pscustomobject] containing cveID, epssScore, percentile, and date for each matching entry.
+    [pscustomobject]
+    Returns a custom object for each vulnerability with the following properties:
+    - cveID: The CVE identifier.
+    - epssScore: The EPSS score as a [double] (e.g., 0.095).
+    - percentile: The percentile rank as a [double] (e.g., 0.93).
+    - date: The date the score was calculated.
 
 .LINK
-    https://www.first.org/epss/
+    https://www.first.org/epss/data-and-api
 
 .NOTES
     Author: Marco Kleinert
     Date: July 2025
-    The function uses the public FIRST EPSS API and may be subject to availability or rate limits.
+    The function uses the public FIRST.org EPSS API and may be subject to availability or rate limits.
 #>
 function Get-EpssScore {
     [CmdletBinding(DefaultParameterSetName = 'ByCveId')]
