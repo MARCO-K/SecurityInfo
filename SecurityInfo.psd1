@@ -32,7 +32,8 @@
         'Get-EpssScore',
         'Get-ExploitDb',
         'Get-Euvd',
-        'Get-GitHubSecurityAdvisory'
+    'Get-GitHubSecurityAdvisory',
+    'Get-SqlServerCve'
     )
 
     # Cmdlets to export from this module
@@ -48,7 +49,7 @@
     PrivateData          = @{
         PSData = @{
             # Tags for this module (used for discovery in PowerShell Gallery)
-            Tags                 = @('Security', 'CVE', 'Vulnerability', 'NVD', 'CISA', 'EPSS', 'ExploitDB', 'InfoSec', 'ThreatIntel')
+        Tags                 = @('Security', 'CVE', 'Vulnerability', 'NVD', 'CISA', 'EPSS', 'ExploitDB', 'InfoSec', 'ThreatIntel', 'SQLServer')
 
             # License URI for this module
             LicenseUri           = 'https://github.com/MARCO-K/SecurityInfo/blob/main/LICENSE'
@@ -90,7 +91,8 @@
         'functions/Get-EpssScore.ps1',
         'functions/Get-ExploitDb.ps1',
         'functions/Get-Euvd.ps1',
-        'functions/Get-GitHubSecurityAdvisory.ps1'
+        'functions/Get-GitHubSecurityAdvisory.ps1',
+        'functions/Get-SqlServerCve.ps1'
     )
 
     # Help info URI
