@@ -1,26 +1,31 @@
 <#
 .SYNOPSIS
-    Retrieves the official CVE record from the cve.org API.
+    Retrieves the official CVE record from the CVE.org API.
 
 .DESCRIPTION
     This function queries the CVE Services API (cve.org) for the authoritative record of a specific CVE ID.
-    This is the direct source of information from the CVE Numbering Authority (CNA) and is often the first place a new CVE's details are published.
+    This is the direct source of information from the CVE Numbering Authority (CNA) and is often the first place a new CVE's details are published, especially for CVEs in a RESERVED state. It is a crucial source for the most up-to-date, raw vulnerability data.
 
 .PARAMETER CveId
-    The CVE ID (e.g., "2023-12345" or "CVE-2023-12345") to retrieve.
+    The CVE ID to retrieve. It can be provided with or without the "CVE-" prefix (e.g., "2023-12345" or "CVE-2023-12345"). This parameter accepts pipeline input.
 
 .EXAMPLE
     Get-CveOrg -CveId "CVE-2024-0078"
-
-    Retrieves the official record for CVE-2024-0078.
+    # Retrieves the official record for CVE-2024-0078.
 
 .EXAMPLE
     "2024-21501" | Get-CveOrg
-
-    Retrieves the record for CVE-2024-21501 using pipeline input.
+    # Retrieves the record for CVE-2024-21501 using pipeline input.
 
 .OUTPUTS
-    [pscustomobject] containing the official CVE record details.
+    [pscustomobject]
+    Returns a custom object containing the official CVE record details, including:
+    - CVEID, Title, State (e.g., PUBLISHED, REJECTED)
+    - AssigningCNA
+    - DatePublished, DateUpdated
+    - Description
+    - BaseScore and BaseSeverity (from CVSS v3.1 if available)
+    - A list of references.
 
 .LINK
     https://www.cve.org/AllResources/CveServices
@@ -30,6 +35,7 @@
     Author: Marco Kleinert
     Date: July 2025
     This function uses the public CVE Services API and may be subject to rate limits.
+    If a CVE is not found, a warning will be displayed.
 #>
 function Get-CveOrg {
     [CmdletBinding()]

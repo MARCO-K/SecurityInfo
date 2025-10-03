@@ -1,60 +1,69 @@
 <#
 .SYNOPSIS
-    Retrieves CVE information from the NVD API based on keyword, days, or CVE ID.
+    Retrieves CVE information from the NVD API based on a keyword, date range, or specific CVE ID.
 
 .DESCRIPTION
-    This function queries the National Vulnerability Database (NVD) API for CVEs using a keyword, a date range, or a specific CVE ID.
-    You can filter by severity, limit the number of results, and optionally include affected software details.
+    This function queries the National Vulnerability Database (NVD) API 2.0 to fetch CVE details.
+    It supports searching by a general keyword, retrieving CVEs published within a recent number of days, or looking up a single CVE by its ID.
+
+    The function automatically determines the best available CVSS score, prioritizing v4.0, then falling back to v3.1.
+    Results can be filtered by severity and the total number of records can be limited using the -Top parameter.
 
 .PARAMETER Keyword
-    Search for CVEs containing the specified keyword.
+    A keyword to search for in the NVD database. The search is performed against the entire CVE record.
 
 .PARAMETER Days
-    Retrieve CVEs published in the last N days (maximum 120).
+    The number of recent days for which to retrieve published CVEs. The NVD API limits this to a maximum of 120 days.
 
 .PARAMETER CveId
-    Retrieve details for a specific CVE ID (e.g., "2023-12345").
+    The specific CVE ID (e.g., "2023-12345" or "CVE-2023-12345") to retrieve.
 
 .PARAMETER Severity
-    Filter results by CVSS v3/v4 severity: LOW, MEDIUM, HIGH, or CRITICAL.
+    Filters the results by the specified CVSS severity. Accepted values are LOW, MEDIUM, HIGH, CRITICAL.
+    This filter applies to both CVSS v3 and v4 metrics.
 
 .PARAMETER Top
-    Limit the number of results returned (1-2000).
+    Limits the number of results returned. The valid range is from 1 to 2000.
 
 .PARAMETER IncludeAffectedSoftware
-    If specified, includes affected vendors and products in the output.
+    If specified, the output object will include two additional properties: 'AffectedVendors' and 'AffectedProducts',
+    which are comma-separated strings derived from the CVE's CPE (Common Platform Enumeration) data.
 
 .EXAMPLE
     Get-NvdCve -Keyword "openssl" -Severity "HIGH" -Top 5
-
-    Retrieves up to 5 HIGH severity CVEs related to "openssl".
+    # Retrieves up to 5 HIGH severity CVEs related to "openssl".
 
 .EXAMPLE
     Get-NvdCve -Days 7 -Severity "CRITICAL"
-
-    Retrieves CRITICAL CVEs published in the last 7 days.
-
-.EXAMPLE
-    Get-NvdCve -CveId "2023-12345"
-
-    Retrieves details for CVE-2023-12345.
+    # Retrieves CRITICAL CVEs published in the last 7 days.
 
 .EXAMPLE
-    Get-NvdCve -Keyword "windows" -IncludeAffectedSoftware
+    Get-NvdCve -CveId "2023-12345" -IncludeAffectedSoftware
+    # Retrieves details for CVE-2023-12345 and includes its affected software.
 
-    Retrieves CVEs related to "windows" and includes affected vendors/products.
+.OUTPUTS
+    [pscustomobject]
+    Returns one or more custom objects with the following properties:
+    - CVEID
+    - CVSSVersion (e.g., "4.0" or "3.1")
+    - CVSSSeverity
+    - CVSSBaseScore
+    - Description
+    - Published (date)
+    - LastModified (date)
+    - Status
+    - CWEIDs (if available)
+    - AffectedVendors (if -IncludeAffectedSoftware is used)
+    - AffectedProducts (if -IncludeAffectedSoftware is used)
 
 .NOTES
     Author: Marco Kleinert
     Date: July 2025
     API: NVD REST API v2.0
+    The NVD API has rate limits. Frequent, rapid requests may result in temporary throttling.
 
 .LINK
-    https://nvd.nist.gov/vuln/data-feeds#JSON_FEED
-
-    This function is part of the NVD PowerShell module.
-    Ensure you have the required permissions to access the NVD API.
-    The API has rate limits; avoid excessive requests in a short time.
+    https://nvd.nist.gov/developers/vulnerabilities
 #>
 function Get-NvdCve {
     [CmdletBinding(DefaultParameterSetName = 'ByKeyword')]

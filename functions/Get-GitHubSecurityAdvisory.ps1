@@ -3,34 +3,54 @@
     Retrieves GitHub Security Advisory details by CVE or GHSA ID.
 
 .DESCRIPTION
-    Queries the GitHub GraphQL API for security advisories using either a CVE or GHSA identifier.
-    Returns one or more advisories, depending on the Count parameter. Requires a GitHub Personal Access Token (PAT) in the $env:GITHUB_PAT environment variable.
+    This function queries the GitHub GraphQL API to fetch detailed information about a specific security advisory.
+    It can identify the advisory using either a CVE ID or a GHSA (GitHub Security Advisory) ID.
+
+    Authentication is required. The function uses a GitHub Personal Access Token (PAT).
+    You must either provide the token via the -Token parameter or have it set in the $env:GITHUB_PAT environment variable.
 
 .PARAMETER CveId
-    The CVE ID (e.g., "2023-12345") to search for.
+    The Common Vulnerabilities and Exposures (CVE) ID to search for (e.g., "CVE-2023-12345").
+    If the 'CVE-' prefix is omitted, it will be added automatically.
 
 .PARAMETER GhsaId
-    The GitHub Security Advisory ID (e.g., "GHSA-xxxx-xxxx-xxxx") to search for.
+    The GitHub Security Advisory ID (e.g., "GHSA-xxxx-xxxx-xxxx") to retrieve directly.
 
 .PARAMETER Token
-    The GitHub Personal Access Token (PAT) to use for authentication. Defaults to $env:GITHUB_PAT.
-
-
-.EXAMPLE
-    Get-GitHubSecurityAdvisory -CveId "2023-12345"
-
-.EXAMPLE
-    Get-GitHubSecurityAdvisory -GhsaId "GHSA-xxxx-xxxx-xxxx"
+    A GitHub Personal Access Token (PAT) used to authenticate with the GitHub GraphQL API.
+    If not provided, the function will attempt to use the value from the $env:GITHUB_PAT environment variable.
 
 .EXAMPLE
     Get-GitHubSecurityAdvisory -CveId "2023-12345"
-    # Returns up to 5 advisories for the given CVE ID.
+    # Retrieves the GitHub Security Advisory associated with CVE-2023-12345.
+
+.EXAMPLE
+    Get-GitHubSecurityAdvisory -GhsaId "GHSA-abcd-1234-efgh"
+    # Retrieves the advisory with the specified GHSA ID.
+
+.EXAMPLE
+    $myToken = "ghp_..."
+    Get-GitHubSecurityAdvisory -CveId "2023-12345" -Token $myToken
+    # Retrieves the advisory using a token provided directly as a parameter.
 
 .OUTPUTS
-    [pscustomobject] with advisory details. If multiple advisories are found, an array of objects is returned.
+    [pscustomobject]
+    Returns a single custom object containing the full details of the security advisory, including:
+    - GhsaId, Summary, Description, Severity, Permalink
+    - Dates (Published, Updated, Withdrawn)
+    - CVSS score and vector
+    - A list of associated CWEs
+    - Details on vulnerable packages, version ranges, and patched versions.
+    If no advisory is found, it returns $null.
 
 .LINK
-    https://docs.github.com/en/graphql
+    https://docs.github.com/en/graphql/explorer
+    https://docs.github.com/en/code-security/security-advisories/about-github-security-advisories
+
+.NOTES
+    Author: Marco Kleinert
+    Date: July 2025
+    A GitHub PAT with the 'security_events' scope may be required for accessing some security advisory data.
 #>
 function Get-GitHubSecurityAdvisory {
     [CmdletBinding(DefaultParameterSetName = 'ByCveId')]

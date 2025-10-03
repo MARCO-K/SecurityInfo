@@ -1,35 +1,50 @@
 <#
 .SYNOPSIS
-    Provides a comprehensive, consolidated security overview for one or more CVEs.
+    Aggregates and consolidates security information for one or more CVEs from multiple sources.
 
 .DESCRIPTION
-    This function acts as a "meta-function" that queries multiple security data sources for a given CVE ID.
-    It gathers information from NVD, cve.org, CISA KEV, EPSS, and Exploit-DB, then presents a unified summary.
+    This function serves as a central hub for vulnerability intelligence, querying multiple public security data sources for a given CVE ID. It gathers information from:
+    - National Vulnerability Database (NVD)
+    - CVE.org (MITRE)
+    - CISA Known Exploited Vulnerabilities (KEV)
+    - FIRST Exploit Prediction Scoring System (EPSS)
+    - Exploit-DB
+    - ENISA EU Vulnerability Database (EUVD)
+    - GitHub Security Advisories
 
-    The function intelligently prioritizes data sources, using the enriched information from NVD when available,
-    but falling back to the official cve.org record for newer or reserved CVEs. This ensures the most
-    complete and timely information is always returned.
-
+    The function then presents a unified summary, intelligently prioritizing data from the more detailed NVD source when available, but falling back to the official cve.org record for newer or reserved CVEs. This ensures the most complete and timely information is returned in a single, easy-to-use object.
 
 .PARAMETER CveId
-    One or more CVE IDs to query. These can be provided with or without the "CVE-" prefix.
+    One or more CVE IDs to query. These can be provided via direct parameter or through the pipeline.
+    The 'CVE-' prefix is optional and will be added automatically.
 
 .PARAMETER vulnDetails
-    If specified, includes detailed nested objects from each available data source in the output (NVD_Data, CveOrg_Data, CisaKev_Data, Epss_Data, ExploitDb_Data, Euvd_Data, GitHub_Data).
+    A switch parameter that, if specified, includes the full, detailed objects from each data source as nested properties in the output.
+    The properties are named after the source (e.g., NVD_Data, CveOrg_Data, CisaKev_Data, etc.). This is useful for in-depth analysis.
 
 .EXAMPLE
-    PS C:\> Get-SecurityInfo -CveId "CVE-2024-21413"
+    Get-SecurityInfo -CveId "CVE-2024-21413"
 
-    Retrieves the consolidated security information for the Microsoft Outlook vulnerability.
+    # Retrieves the consolidated security summary for the Microsoft Outlook vulnerability (CVE-2024-21413).
 
 .EXAMPLE
-    PS C:\> "2024-27198", "2024-27199" | Get-SecurityInfo
+    "2024-27198", "2024-27199" | Get-SecurityInfo
 
-    Retrieves information for two different CVEs related to JetBrains TeamCity, using pipeline input.
+    # Retrieves information for two different CVEs related to JetBrains TeamCity using pipeline input.
+
+.EXAMPLE
+    Get-SecurityInfo -CveId "CVE-2023-36884" -vulnDetails
+
+    # Retrieves the summary and also includes the full, detailed data objects from NVD, CISA KEV, Exploit-DB, and other sources where the CVE was found.
 
 .OUTPUTS
-    [pscustomobject] An object containing a summarized view of the vulnerability, including its title, status,
-    severity, and scores. It also includes detailed nested objects from each data source for deeper analysis.
+    [pscustomobject]
+    By default, returns an object containing a summarized view of the vulnerability with the following key fields:
+    - CveId
+    - Title, Published, LastModified, Status, Severity, CVSSScore, Description (prioritizing NVD, then CVE.org)
+    - Boolean flags for quick checks (e.g., IsNvdAvailable, IsCisaKevAvailable, IsGitHubAvailable).
+
+    If -vulnDetails is used, the object will also contain nested properties (e.g., NVD_Data, GitHub_Data) holding the complete objects from each respective source.
 
 .LINK
     https://nvd.nist.gov
@@ -37,10 +52,14 @@
     https://www.cisa.gov/known-exploited-vulnerabilities-catalog
     https://www.first.org/epss/
     https://www.exploit-db.com/
+    https://euvd.enisa.europa.eu/
+    https://docs.github.com/en/code-security/security-advisories
 
 .NOTES
     Author: Marco Kleinert
     Date: July 2025
+    This function calls other functions within the module. Ensure all function files are available.
+    API keys for sources like GitHub must be configured for the underlying functions to work correctly.
 #>
 function Get-SecurityInfo {
     [CmdletBinding()]
