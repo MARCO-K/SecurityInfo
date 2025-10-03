@@ -119,7 +119,7 @@ function Get-CveOrg {
                     Write-Warning "CVE record for '$CveId' not found on cve.org."
                 }
                 else {
-                    Write-Error "An API error occurred while querying cve.org: Response status code does not indicate success: $statusCode ($($_.Exception.Response.StatusDescription))."
+                    Write-Error "An API error occurred while querying cve.org: Response status code does not indicate success: $([int]$statusCode) ($($_.Exception.Response.StatusDescription))."
                 }
             }
             elseif ($_.Exception.Message -match "404|Not Found") {
