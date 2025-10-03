@@ -35,13 +35,28 @@ Describe 'Get-CveOrg' {
             param($Uri)
             switch -Wildcard ($Uri) {
                 '*api/cve/CVE-2023-12345*' { return $script:mockCveData }
-                '*api/cve/CVE-9999-9999*' {
-                    # Throw an exception with 404 in the message for our error handler to catch
-                    throw "Response status code does not indicate success: 404 (Not Found)."
-                }
-                '*api/cve/CVE-5000-5000*' {
-                    # Throw an exception with 500 in the message for our error handler to catch
-                    throw "Response status code does not indicate success: 500 (Internal Server Error)."
+                default {
+                    # Default behavior for error cases
+                    $statusCode = 0
+                    $statusDescription = ''
+                    if ($Uri -like '*api/cve/CVE-9999-9999*') {
+                        $statusCode = [System.Net.HttpStatusCode]::NotFound
+                        $statusDescription = 'Not Found'
+                    }
+                    elseif ($Uri -like '*api/cve/CVE-5000-5000*') {
+                        $statusCode = [System.Net.HttpStatusCode]::InternalServerError
+                        $statusDescription = 'Internal Server Error'
+                    }
+
+                    # Create a mock exception that resembles System.Net.WebException
+                    $response = [pscustomobject]@{
+                        StatusCode        = $statusCode
+                        StatusDescription = $statusDescription
+                    }
+                    $exception = [pscustomobject]@{ Response = $response }
+                    # Add the type name to make it pass the '-is [System.Net.WebException]' check
+                    $exception.psobject.TypeNames.Insert(0, 'System.Net.WebException')
+                    throw $exception
                 }
             }
         }
@@ -75,10 +90,8 @@ Describe 'Get-CveOrg' {
             $messages = $warnings | ForEach-Object { $_.Message }
             $messages | Should -Contain "CVE record for 'CVE-9999-9999' not found on cve.org."
         }
-        It 'writes an error for other API failures' {
-            $errors = & { Get-CveOrg -CveId "CVE-5000-5000" } 2>&1
-            $messages = $errors | ForEach-Object { $_.ToString() }
-            $messages | Should -Match "An API error occurred while querying cve\.org.*500"
+        It 'writes a specific error for a 500 API failure' {
+            { Get-CveOrg -CveId "CVE-5000-5000" } | Should -Throw "An API error occurred while querying cve.org: Response status code does not indicate success: 500 (Internal Server Error)."
         }
     }
 }
